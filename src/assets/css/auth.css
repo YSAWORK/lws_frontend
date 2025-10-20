@@ -1,0 +1,88 @@
+@import url(base.css);
+
+body {
+    font-family: var(--font-primary), sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+    width: 40vh;
+    margin: 10vh auto 0 auto;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 30px;
+    background: var(--surface);
+}
+
+
+h1 {
+    margin-top: 0;
+    color: var(--text-button);
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 6px 0 4px;
+    color: var(--text-700);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input {
+    padding: 4px 5px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+button {
+    background-color: var(--button-primary);
+    color: var(--text-button);
+    height: 5vh;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: var(--font-button), serif;
+}
+
+button:hover {
+    background-color: var(--button-primary-hover);
+    color: var(--bg);
+}
+
+button:disabled {
+    background-color: var(--button-disabled);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+.error {
+    color: var(--danger-primary);
+    width: fit-content;
+    text-align: center;
+    font-size: 12px;
+    animation: fadeInOut 3s ease-in;
+    z-index: 1000;
+    display: inline-block;
+}
+
+.info{
+    color: var(--info-primary);
+    margin-top: 6px;
+    text-align: center;
+    font-size: 12px;
+    animation: fadeInOut 3s ease-in;
+    z-index: 1000;
+}

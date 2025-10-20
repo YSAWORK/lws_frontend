@@ -1,0 +1,310 @@
+@import url(base.css);
+
+/* MAIN FRAME */
+body {
+  background-color: var(--bg);
+  margin:0;
+  padding:0;
+  font-family: var(--font-primary), sans-serif;
+  color: var(--text-primary);
+}
+
+#header {
+    background-color: var(--bg_header);
+    font-family: var(--font-button), sans-serif;
+    color: var(--text-button);
+    margin:0;
+    width: 100%;
+    height: 10vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    border-bottom: 1px ridge var(--border);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, .25);
+    z-index: var(--z-main-frame);
+    display: grid;
+    grid-template-columns: 5vw 80vw 20vw;
+    gap: 0;
+}
+
+#main_div {
+    display: grid;
+    grid-template-columns: 80% 20%;
+    gap: 0;
+    height: 85vh;
+    margin: 0 0 5vw 0;
+}
+
+#main_column_left {
+    height: 80%;
+}
+
+#main_column_right {
+    background-color: var(--surface);
+    height: 100%;
+    width: 20%;
+    position: fixed;
+    top: 10vh;
+    right: 0;
+    z-index: var(--z-navbar);
+}
+
+#footer {
+    background-color: var(--bg_header);
+    margin: 0;
+    padding-bottom:2vh;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 5vh;
+    z-index: var(--z-main-frame);
+    border-top: 1px ridge var(--border);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, .25);
+}
+
+/* === HEADER === */
+#logo_block{
+    overflow: hidden;
+}
+
+#img_logo{
+    width: 5vw;
+    height: 10vh;
+    object-fit: contain;
+    opacity: 0.9;
+}
+
+#page_title{
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    align-self: center;
+}
+
+#path_bar{
+    font-size: 1rem;
+    margin: 0 0 0 1vw;
+    padding: 0;
+    text-align: center;
+    color: var(--text-700);
+}
+
+/* === MAIN ELEMENTS === */
+button{
+    background-color: var(--button-primary);
+    color: var(--text-button);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: var(--font-button), serif;
+}
+
+button:hover {
+    background-color: var(--button-primary-hover);
+    color: var(--bg);
+}
+
+
+
+h1 {
+  font-family: 'title_font', sans-serif;
+  color: var(--title_color);
+  text-align: center;
+  margin: 0;
+}
+
+.list_container {
+  width: 100%;
+  margin: 0 0.5vw;
+}
+
+.hr-line {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--title_color);
+  font-weight: bold;
+  margin: 1.5vw 0 0 0;
+}
+
+  .hr-line::before,
+  .hr-line::after {
+    content: '';
+    flex: 1;
+    border: 1px solid var(--detail_color);
+  }
+
+.error{
+    color: var(--error_color);
+    font-weight: bold;
+  }
+
+
+/* ТАБЛИЦЯ ДАНИХ */
+  .list_table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: auto;
+    line-height: 1.5;
+  }
+
+    .list_table th {
+      background-color: var(--detail_color);
+      text-align: center;
+      position: sticky;
+      top: 5.7vw;
+      z-index: 1;
+    }
+
+    .list_table td {
+      padding: 0 1vw;
+    }
+
+    .list_table tr:hover {
+      background-color: var(--detail_color);
+    }
+
+    .image_in_td {
+      width: 5vw;
+      height: auto;
+    }
+
+    .list_table th:first-child,
+    .list_table td:first-child {
+      width: 1vw;
+      white-space: nowrap;
+    }
+
+    /* ПРОФІЛЬ ПРАЦІВНИКА */
+    .profile_foto{
+      width: 10vw;
+      height: auto;
+      box-shadow: 0 0 1vw var(--text_color);
+      border-radius: 0.5vw;
+    }
+
+    .data_block{
+      display: grid;
+      grid-template-columns: 70% 30%;
+      gap: 0;
+      margin: 0.5vw;
+    }
+
+    .data_string{
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1vw;
+      margin: 0;
+      padding: 0;
+    }
+
+    .foto_block {
+      display: grid;
+      grid-template-columns: auto 2fr;
+      gap: 2vw;
+    }
+
+    .notes_string {
+      color: var(--title_color);
+      font-size: 0.9rem;
+      text-align: justify;
+    }
+
+    .ul_profile{
+      padding: 0;
+      margin: 0;
+    }
+
+    .ul_profile li {
+      position: relative;
+      padding-left: 2.5vw;
+    }
+
+    .ul_profile li p {
+      margin: 0.5vw;
+      text-align: justify;
+    }
+
+    #li_phone::before {
+      content: "";
+      position: absolute;
+      left: 1vw;
+      top: 0.3vw;
+      width: 1.4rem;
+      height: 1.4rem;
+      background-image: url('@/assets/img/phone.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    #li_email::before {
+      content: "";
+      position: absolute;
+      left: 1vw;
+      top: 0.3vw;
+      width: 1.4rem;
+      height: 1.4rem;
+      background-image: url('@/assets/img/email.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .btn_file{
+      width: 5vw;
+      min-width: 4vw;
+      height: 4vw;
+      min-height: 4vw;
+      border-radius: 0.5rem;
+      background-color: var(--detail_color);
+      border: 1px solid var(--detail_color);
+      box-shadow: 0 0 0.2vw var(--text_color);
+      font-weight: bold;
+      color: var(--title_color);
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .btn_file:hover{
+      background-color: var(--background_color);
+      color: var(--text_color);
+    }
+
+    .btn_func_1{
+      width: 100%;
+      height: 3vw;
+      border-radius: 0.5rem 0 0 0.5rem;
+      background-color: var(--detail_color);
+      border: 1px solid var(--detail_color);
+      box-shadow: 0 0 0.2vw var(--text_color);
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--title_color);
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .btn_func_1:hover{
+      background-color: var(--background_color);
+      color: var(--text_color);
+    }
+
+  .tooltip {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--button_color);
+    color: var(--background_color);
+    padding: 1vw 5vw;
+    border-radius: 0.5vw;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: bold;
+    font-size: 1.2rem;
+    z-index: 1000;
+    animation: fadeInOut 2s ease-in-out;
+  }
