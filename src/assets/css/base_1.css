@@ -1,0 +1,66 @@
+/* === PRIMARY FONT === */
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* === BUTTON FONT === */
+@font-face {
+    font-family: 'Cuprum';
+    src: url('../fonts/Cuprum-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* === ROOT === */
+:root {
+    /* msg */
+    --success-primary: #4F9D77;
+    --success-tip: #e2f1e9;
+    --warning-primary: #C7A555;
+
+    --danger-primary-transparent: rgba(204, 107, 107, 0.5);
+    --info-primary: #5C86B0;
+    /* buttons */
+
+    /* colors */
+    --text-primary: #3B4553;
+    --text-700: #63758c;
+    --text-button: #3B3127;
+
+    --font-size-h1: clamp(18px, 1.5vw, 32px);
+    --font-size-h2: clamp(10px, 1.5vw, 32px);
+    --font-size-h2_addition: clamp(8px, 1.2vw, 28px);
+    --font-size-primary: clamp(6px, 1vw, 24px);
+    --font-size-notice: clamp(4px, 0.8vw, 20px);
+    /* sizes */
+    --fit-content: fit-content;
+    /* z-index */
+    --z-main-frame: 1000;
+    --z-navbar: 900;
+    --z-msg: 2000;
+    --z-modal: 3000;
+
+    --surface: #FFF;
+    /* modals */
+    --radius-modal: 10px;
+    --bg-modal:rgba(0, 0, 0, 0.6);
+    --width-modal: clamp(200px, 30vw, 800px);
+
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    60% { opacity: 0.5; transform: translateY(0); }
+    70% { opacity: 0.3; transform: translateY(0); }
+    80% { opacity: 0.2; transform: translateY(0); }
+    90% { opacity: 0.1; transform: translateY(0); }
+    95% { opacity: 0.05; transform: translateY(5px); }
+    100% { opacity: 0; transform: translateY(10px); }
+}

@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^14.1.0",
     "axios": "^1.12.2",
     "pinia": "^3.0.3",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@types/node": "^24.7.0",

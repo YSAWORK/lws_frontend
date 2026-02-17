@@ -1,0 +1,76 @@
+/* .src/styles/tokens.css */
+/* Style tokens for the application */
+
+/* === FONTS === */
+/* === PRIMARY === */
+@font-face {
+    font-family: 'Lora';
+    src: url('../assets/fonts/Lora-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* === BUTTON === */
+@font-face {
+    font-family: 'Cuprum';
+    src: url('../assets/fonts/Cuprum-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* === ROOT === */
+:root {
+    /* COLOR */
+    --bg: #F7F8FA;
+    --bg-rgb: 247, 248, 250;
+    --bg-modal: rgba(0, 0, 0, 0.5);
+    --bg_header: #efede6;
+    --bg_header-rgb: 239, 237, 230;
+    --bg_error: #f3dddd;
+    --bg_success: #e2f1e9;
+    --text-primary: #3B4553;
+    --text-button: #3B3127;
+    --text-button-rgb: 	59, 49, 39;
+    --text-disabled: #728097;
+    --button-primary: #dad6c8;
+    --button-primary-rgb: 218, 214, 200;
+    --button-primary-hover: #9c8f69;
+    --button-primary-hover-rgb: 156, 143, 105;
+    --button-disabled: #d7dde7;
+    --border: #d7dde7;
+    --danger-primary: #CC6B6B;
+
+    /* BORDER */
+    --border-radius: 5px;
+    --border-radius-image: 0.5vw;
+    --shadow-light: 0 6px 16px rgba(0, 0, 0, .06);
+    --shadow-dark: 0 6px 16px rgba(0, 0, 0, .46);
+
+    /* FONTS */
+    --font-primary: 'Lora', serif;
+    --font-button: 'Cuprum', sans-serif;
+
+    /* FONT SIZES */
+    --btn-font-size-lg: clamp(18px, 1.5vw, 32px);
+    --btn-font-size-md: clamp(12px, 1.2vw, 22px);
+    --btn-font-size-lmd: clamp(12px, 1vw, 22px);
+    --font-size-note: clamp(8px, 0.8vw, 14px);
+    --btn-font-size-sm: clamp(8px, 1vw, 12px);
+    --input-font-size: clamp(12px, 1.2vw, 22px);
+    --label-font-size: clamp(10px, 1vw, 20px);
+
+    /* SIZES */
+    --header-height: 5vw;
+    --min-tr-height: 70px;
+    --avatar-column-width: 6vw;
+    --input-min-height: 50px;
+    --btn-min-height: 50px;
+    --btn-min-width: 50px;
+
+    /* MARGINS & PADDINGS */
+    --margin-base: clamp(1px, 0.2vw, 5px);
+    --padding-base: clamp(1px, 1vw, 100px);
+}

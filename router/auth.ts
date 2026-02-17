@@ -10,7 +10,7 @@ const authRoutes: RouteRecordRaw[] = [
         path: '/login',
         name: 'Login',
         component: () => import('@/components/templates/auth/LoginView/LoginView.vue'),
-        meta: { guestOnly: true },
+        meta: { guestOnly: true, layout: 'auth' },
     },
     ]
 export default authRoutes

@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import authRoutes from './auth'
-import employeesRoutes from "./employees";
+import teamRoutes from "./team";
+import componentRoutes from "./components";
+
 
 const baseRoutes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('@/components/templates/HomeView/HomeView.vue'),
+        component: () => import('@/components/templates/team/TeamList.vue'),
         meta: { requiresAuth: true },
     },
 ]
@@ -14,7 +16,8 @@ const baseRoutes: RouteRecordRaw[] = [
 const routes: RouteRecordRaw[] = [
     ...baseRoutes,
     ...authRoutes,
-    ...employeesRoutes,
+    ...teamRoutes,
+    ...componentRoutes,
 ]
 
 const router = createRouter({

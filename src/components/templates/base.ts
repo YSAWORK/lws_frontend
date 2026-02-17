@@ -1,7 +1,8 @@
-// src/views/useHomeView.ts
-import { ref, onMounted } from 'vue'
+// src.components.templates.base.ts
+
+import {ref, onMounted, provide} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { api } from '@/api'
+import api from "@/api";
 
 type Profile = Record<string, unknown>
 
@@ -19,7 +20,7 @@ export function BaseView(idFromProp?: string | number) {
             error.value = null
             const pid = id ?? idFromProp ?? (route.params.id as string | number)
             if (pid == null) throw new Error('ID не задано')
-            const { data } = await api.get(`/api/profiles/${pid}/`)
+            const { data } = await api.get(`/person/employees/${pid}/`)
             profile.value = data
         } catch (e: any) {
             error.value = e?.response?.data?.detail || 'Помилка при завантаженні профілю'

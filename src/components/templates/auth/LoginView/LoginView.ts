@@ -3,10 +3,12 @@
 // IMPORT TOOLS
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '@/api'
+import api from "@/api";
+import { useAuthStore } from "@/stores/auth"
 
 export function LoginView() {
     const router = useRouter()
+    const auth = useAuthStore()
 
     // --- login form state ---
     const username = ref('')
@@ -66,7 +68,7 @@ export function LoginView() {
         loginError.value = null
         loginLoading.value = true
         try {
-            const { data } = await api.post('/api/auth/login/', {
+            const { data } = await api.post('/auth/login/', {
                 username: username.value,
                 password: password.value,
             })
@@ -88,12 +90,16 @@ export function LoginView() {
         safeError.value = null
         safeLoading.value = true
         try {
-            const { data } = await api.post('/api/auth/safe_code/', {
+            const { data } = await api.post('/auth/save_code/', {
                 username: username.value,
                 safe_code: safe_code.value,
             })
             if (data?.access) localStorage.setItem('access', data.access)
             if (data?.refresh) localStorage.setItem('refresh', data.refresh)
+            auth.initFromStorage()
+            if (data?.employee_id != null) localStorage.setItem("employee_id", String(data.employee_id))
+            else localStorage.removeItem("employee_id")
+
 
             const q = router.currentRoute.value.query
             const nextParam = typeof q.next === 'string' && q.next ? q.next : null

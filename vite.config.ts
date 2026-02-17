@@ -13,8 +13,14 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '/api': 'http://localhost:8001',
-            '/media': 'http://localhost:8001',
+            '/api':  {
+                target: 'http://localhost:8002',
+                changeOrigin: true
+            },
+            '/media':  {
+                target: 'http://localhost:8002',
+                changeOrigin: true
+            },
         }
     }
 })

@@ -1,16 +1,16 @@
+<!-- .src/components/templates/base.vue -->
+
 <script setup lang="ts">
-  import { ref } from 'vue';  import { BaseView} from './base'
-  const {
-    loading,
-    error,
-    onLogout,
-  } = BaseView()
+  import { ref} from "vue";
+  import { BaseView } from "./base";
+  import BaseButton from "@/components/ui/BaseButton.vue";
+  const { loading, onLogout } = BaseView();
 </script>
 
 <template>
   <div id="header">
     <div class="header_block" id="logo_block">
-      <img id="img_logo" src="@/assets/img/logo.png" alt="Logo" />
+
     </div>
     <div class="header_block">
       <div id="page_title">
@@ -37,7 +37,7 @@
     </div>
     <div id = 'main_column_right'>
       <slot name="main_column_right">
-        <h1>Right column</h1>
+        <BaseButton size="lg"> Кабінет </BaseButton>
       </slot>
     </div>
   </div>
@@ -49,4 +49,4 @@
   </div>
 </template>
 
-<style src="@/assets/css/main.css"></style>
+<style src="@/styles/base.css"></style>
