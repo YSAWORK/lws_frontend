@@ -3,9 +3,8 @@
 <script setup lang="ts">
 // ===== IMPORT TOOLS ===== //
 // import general
-import { onMounted, computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
 
 // import features
 import { formatDate } from "@/lib/formatDate";
@@ -13,6 +12,7 @@ import { openPDF } from "@/lib/openPDF";
 import { openLink } from "@/lib/openLink";
 import { sendEmail } from "@/lib/sendEmail";
 import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
+import { useResourceFileUpload } from "@/lib/uploadFile"
 
 // import base elements
 import Base from "@/components/templates/base.vue";
@@ -42,8 +42,9 @@ import BaseTableList from "@/components/ui/BaseTableList.vue";
 import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
 import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
 import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
-import { openFeedbacksModal } from "@/components/modals/openFeedback/script";
-import { openAttorneyUrlModal } from "@/components/modals/editAttorneyUrl/script"
+import { openFeedbacksModal } from "@/components/modals/openFeedback/openFeedbackTs";
+import { openAttorneyUrlModal } from "@/components/modals/editAttorneyUrl/editAttorneyUrlTs"
+import { openEditTextAreaModal } from "@/components/modals/editTextArea/editTextAreaTs"
 import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
 import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
 import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"
@@ -51,88 +52,143 @@ import type { AddressShort } from "@/model_schemas/models/components/address.mod
 import type { AddressShortDTO } from "@/model_schemas/dto/components/address.dto"
 import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
 
+
 // load API
 const store = useMeFullGetStore()
 const { employee } = storeToRefs(store)
 
-// РОУТЕРИ
-const route = useRoute()
-
 // ФУНКЦІЇ
-// edit email notes
-function handleEditEmailNotes(email: EmailShortDTO) {
-  openEditEmailNotesModal(email,  (updated: EmailShortDTO) => {
-    if (!employee.value?.emails) return
-    employee.value.emails = employee.value.emails.map(e =>
-        e.id === updated.id ? updated : e
-    )
-  })
-}
-
-// edit phone notes
-function handleEditPhoneNotes(email: PhoneShortDTO) {
-  openEditPhoneNotesModal(email,  (updated: PhoneShortDTO) => {
-    if (!employee.value?.phones) return
-    employee.value.phones = employee.value.phones.map(e =>
-        e.id === updated.id ? updated : e
-    )
-  })
-}
-
-// edit address notes
-function handleEditAddressNotes(address: AddressShort) {
-  const dto = {
-    ...address,
-    notes: address.notes ?? null,
-  } as unknown as AddressShortDTO
-  openEditAddressNotesModal(dto, (updatedDto) => {
-    if (!employee.value?.addresses) return
-    const updatedModel = mapAddressShort(updatedDto)
-    employee.value.addresses = employee.value.addresses.map(a =>
-        a.id === updatedModel.id ? updatedModel : a
-    )
-  })
-}
-
-
-// edit AttorneyUrl
-function handleEditAttorneyUrl(employeeId: number, currentUrl: string | null) {
-  openAttorneyUrlModal({
-    employeeId,
-    currentUrl,
-    title: "Посилання на профіль адвоката в ЄРАУ",
-    onSaved: async (newUrl) => {
-      if (employee.value) employee.value.AttorneyUrl = newUrl
-      await store.fetchMeFullGet()
-    },
-  })
-}
-
-// open feedback modal
-type FeedbackOwner = { feedbacks?: FeedbackShortDTO[] | null }
-function handleOpenFeedbacks(
-    entity: FeedbackOwner,
-    opts: { employeeCode?: string | null; elementCode?: string | null; title: string },
-) {
-  const feedbacksRef = computed(() => entity.feedbacks ?? [])
-
-  if (!opts.employeeCode || !opts.elementCode) {
-    console.warn("Cannot open feedbacks modal: missing codes", opts)
-    return
+  // edit email notes
+  function handleEditEmailNotes(email: EmailShortDTO) {
+    openEditEmailNotesModal(email,  (updated: EmailShortDTO) => {
+      if (!employee.value?.emails) return
+      employee.value.emails = employee.value.emails.map(e =>
+          e.id === updated.id ? updated : e
+      )
+    })
   }
-  openFeedbacksModal(
-      () => entity.feedbacks ?? [],
-      opts.employeeCode!,
-      opts.elementCode!,
-      opts.title,
-      async () => {
-        const employeeId = employee.value?.Id
-        if (!employeeId) return
-        await store.fetchMeFullGet()
-      }
-  )
-}
 
+  // edit phone notes
+  function handleEditPhoneNotes(email: PhoneShortDTO) {
+    openEditPhoneNotesModal(email,  (updated: PhoneShortDTO) => {
+      if (!employee.value?.phones) return
+      employee.value.phones = employee.value.phones.map(e =>
+          e.id === updated.id ? updated : e
+      )
+    })
+  }
+
+  // edit address notes
+  function handleEditAddressNotes(address: AddressShort) {
+    const dto = {
+      ...address,
+      notes: address.notes ?? null,
+    } as unknown as AddressShortDTO
+    openEditAddressNotesModal(dto, (updatedDto) => {
+      if (!employee.value?.addresses) return
+      const updatedModel = mapAddressShort(updatedDto)
+      employee.value.addresses = employee.value.addresses.map(a =>
+          a.id === updatedModel.id ? updatedModel : a
+      )
+    })
+  }
+
+
+  // edit AttorneyUrl
+  function handleEditAttorneyUrl(employeeId: number, currentUrl: string | null) {
+    openAttorneyUrlModal({
+      employeeId,
+      currentUrl,
+      title: "Посилання на профіль адвоката в ЄРАУ",
+      onSaved: async (newUrl) => {
+        if (employee.value) employee.value.AttorneyUrl = newUrl
+        await store.fetchMeFullGet()
+      },
+    })
+  }
+
+  // open feedback modal
+  type FeedbackOwner = { feedbacks?: FeedbackShortDTO[] | null }
+  function handleOpenFeedbacks(
+      entity: FeedbackOwner,
+      opts: { employeeCode?: string | null; elementCode?: string | null; title: string },
+  ) {
+
+    if (!opts.employeeCode || !opts.elementCode) {
+      console.warn("Cannot open feedbacks modal: missing codes", opts)
+      return
+    }
+    openFeedbacksModal(
+        () => entity.feedbacks ?? [],
+        opts.employeeCode!,
+        opts.elementCode!,
+        opts.title,
+        async () => {
+          const employeeId = employee.value?.Id
+          if (!employeeId) return
+          await store.fetchMeFullGet()
+        }
+    )
+  }
+
+  // edit file
+  const employeeUploader = useResourceFileUpload((id) => `person/employees/${id}/`)
+  const isUploading = employeeUploader.isUploading
+  const UploadError = employeeUploader.error
+  const uploadEmployeeFile = employeeUploader.upload
+  const FileInput = ref<HTMLInputElement | null>(null)
+
+  function triggerPickFile() {
+    UploadError.value = null
+    FileInput.value?.click()
+  }
+
+  async function onPickFile(e: Event, field: string) {
+    const input = e.target as HTMLInputElement
+    const file = input.files?.[0] ?? null
+    input.value = ""
+
+    if (!file) return
+
+    // validate
+    if (file.type !== "application/pdf") {
+      UploadError.value = "Потрібен саме PDF-файл."
+      return
+    }
+
+    const maxMb = 15
+    const mb = file.size / 1024 / 1024
+    if (mb > maxMb) {
+      UploadError.value = `Файл завеликий (${mb.toFixed(1)}MB). Максимум: ${maxMb}MB.`
+      return
+    }
+
+    const employeeId = employee.value?.Id
+    if (!employeeId) {
+      UploadError.value = "Не знайдено employeeId."
+      return
+    }
+
+    // upload
+    await uploadEmployeeFile(employeeId, field, file)
+
+    // refresh employee so employee.LicenseFile becomes актуальним
+    await store.fetchMeFullGet()
+  }
+
+  // edit Biography
+  function handleEditBiography(id: number) {
+    openEditTextAreaModal({
+      title: "Біографія працівника",
+      id,
+      patchUrl: `/person/employees/${id}/`,
+      initialValue: employee.value?.Biography ?? "",
+      fieldName: "info",
+      onSaved: (newValue) => {
+        if (employee.value) employee.value.Biography = newValue
+      },
+    })
+  }
 
 // ЗБІР MOUNT
 onMounted(() => store.fetchMeFullGet())
@@ -606,6 +662,23 @@ onMounted(() => store.fetchMeFullGet())
                               :title="employee?.LicenseFile ? `Завантажити PDF-файл Свідоцтва` : 'PDF-файл Свідоцтва відсутній'">
                             <BaseImage  :src="DownloadFile" size="icon"/>
                           </BaseButton>
+                          <BaseButton
+                              name="Кнопка вибору нового файлу Свідоцтва"
+                              title="Обрати новий файл Свідоцтва (PDF)"
+                              size="sm"
+                              @click="triggerPickFile"
+                              :disabled="isUploading"
+                          >
+                            <BaseImage :src="EditImg" size="icon" />
+                          </BaseButton>
+                          <input
+                              name="Технічний елемент для вибору файлу Свідоцтва"
+                              ref="FileInput"
+                              type="file"
+                              accept="application/pdf"
+                              style="display:none"
+                              @change="onPickFile($event,'attorney_license_file')"
+                          />
                         </ContentContainer>
                       </td>
                     </tr>
@@ -663,6 +736,23 @@ onMounted(() => store.fetchMeFullGet())
                               :title="employee?.CertificateFile ? `Завантажити PDF-файл Посвідчення` : 'PDF-файл Посвідчення відсутній'">
                             <BaseImage  :src="DownloadFile" size="icon"/>
                           </BaseButton>
+                          <BaseButton
+                              name="Кнопка вибору нового файлу посвідчення адвоката"
+                              title="Обрати новий файл посвідчення адвоката (PDF)"
+                              size="sm"
+                              @click="triggerPickFile"
+                              :disabled="isUploading"
+                          >
+                            <BaseImage :src="EditImg" size="icon" />
+                          </BaseButton>
+                          <input
+                              name="Технічний елемент для вибору файлу посвідчення адвоката"
+                              ref="FileInput"
+                              type="file"
+                              accept="application/pdf"
+                              style="display:none"
+                              @change="onPickFile($event,'attorney_certificate_file')"
+                          />
                         </ContentContainer>
                       </td>
                     </tr>
@@ -675,17 +765,43 @@ onMounted(() => store.fetchMeFullGet())
           <BaseLine width="think"/>
 
           <!-- БІОГРАФІЯ -->
+
           <ContentContainer
               padding="bottom"
               flex="column">
             <BaseCollapse
                 title="Біографія"
                 marginStyle="bottom_1vw">
-                <span
-                    class="text_string"
-                    v-if="employee?.Biography">
-                  {{ employee?.Biography }}
-                </span>
+              <BaseTableList  v-if="employee?.Biography">
+                <template #colgroup>
+                  <col style="width:90%">
+                  <col style="width:10%">
+                </template>
+                <template #tbody_rows>
+                  <tr>
+                    <td class="text_string" style="padding-left: 1vw">
+                      {{ employee?.Biography }}
+                    </td>
+                    <td style="vertical-align: top; text-align: right;">
+                      <ContentContainer
+                          padding="none"
+                          noBackground="true"
+                          flex="row"
+                          justifyContent="end"
+                          alignItems="start">
+                        <BaseButton
+                            name="Кнопка редагування біографії"
+                            title="Редагувати біографію"
+                            size="sm"
+                            @click="handleEditBiography(employee.Id)"
+                        >
+                          <BaseImage :src="EditImg" size="icon" />
+                        </BaseButton>
+                      </ContentContainer>
+                    </td>
+                  </tr>
+                </template>
+              </BaseTableList>
               <span class="text_no_data" v-else> Відсутні дані </span>
             </BaseCollapse>
           </ContentContainer>

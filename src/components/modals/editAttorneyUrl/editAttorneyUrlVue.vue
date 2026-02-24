@@ -68,10 +68,11 @@
       if (!v?.trim()) return true
       try {
         const u = new URL(v.trim())
-        if (u.protocol !== "https:") return false
-        if (u.hostname !== "erau.unba.org.ua") return false
-        if (!u.pathname.startsWith("/profile/")) return false
-        return true
+        return (
+            u.protocol === "https:" &&
+            u.hostname === "erau.unba.org.ua" &&
+            u.pathname.startsWith("/profile/")
+        )
       } catch {
         return false
       }
@@ -94,8 +95,10 @@
       isSubmitting.value = true
       try {
         const AttorneyUrlPatchUrl = (id: number) => `/person/employees/${id}/`
-        const { data } = await api.patch(AttorneyUrlPatchUrl(props.employeeId), {attorney_register_url: newUrl })
-        emit("saved", data)
+        const { data } = await api.patch(AttorneyUrlPatchUrl(props.employeeId), {
+          attorney_register_url: newUrl,
+        })
+        emit("saved", data.attorney_register_url ?? newUrl ?? null)
         emit("close")
       } catch (e: any) {
         error.value =

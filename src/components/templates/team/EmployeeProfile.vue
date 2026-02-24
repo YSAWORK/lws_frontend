@@ -42,7 +42,7 @@
     import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
     import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
     import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
-    import { openFeedbacksModal } from "@/components/modals/openFeedback/script";
+    import { openFeedbacksModal } from "@/components/modals/openFeedback/openFeedbackTs";
     import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
     import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
     import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"

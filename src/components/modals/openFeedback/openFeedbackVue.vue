@@ -1,4 +1,4 @@
-<!-- src/components/modals/openFeedback/template.vue -->
+<!-- src/components/modals/openFeedback/editAttorneyUrlVue.vue -->
 
 <script setup lang="ts">
   // IMPORT TOOLS
@@ -19,7 +19,6 @@
     elementCode?: string
   }>()
 
-  const feedbacks = computed(() => props.feedbacks ?? [])
   const feedbacksLocal = ref<FeedbackShortDTO[]>(props.feedbacks ?? [])
 
   const emit = defineEmits<{

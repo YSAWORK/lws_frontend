@@ -1,4 +1,4 @@
-// src/components/modals/editEmailNotes/script.ts
+// src/components/modals/editEmailNotes/editAttorneyUrlTs.ts
 
 // IMPORT TOOLS
 import { createApp, h } from "vue"

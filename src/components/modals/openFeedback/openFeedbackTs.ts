@@ -1,5 +1,5 @@
 import { createApp, h, ref } from "vue"
-import FeedbacksModal from "@/components/modals/openFeedback/template.vue"
+import OpenFeedbackVue from "@/components/modals/openFeedback/openFeedbackVue.vue"
 import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto"
 
 export function openFeedbacksModal(
@@ -31,7 +31,7 @@ export function openFeedbacksModal(
             }
 
             return () =>
-                h(FeedbacksModal, {
+                h(OpenFeedbackVue, {
                     title,
                     feedbacks: feedbacksRef.value,
                     employeeCode,

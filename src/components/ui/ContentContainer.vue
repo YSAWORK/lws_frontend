@@ -127,4 +127,16 @@ defineProps<{
     border-radius: var(--counter-radius);
   }
 
+  .align-items-center {
+    align-items: center;
+  }
+
+  .align-items-start {
+    align-items: flex-start;
+  }
+
+  .align-items-end {
+    align-items: flex-end;
+  }
+
 </style>

@@ -1,4 +1,4 @@
-// src/components/modals/editEmailNotes/script.ts
+// src/components/modals/editEmailNotes/editAttorneyUrlTs.ts
 
 import { createApp, h } from "vue"
 import EditEmailListModal from "@/components/modals/editEmailList/template.vue"

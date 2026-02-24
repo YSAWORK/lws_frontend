@@ -2,7 +2,7 @@
 
 // IMPORT TOOLS
     import { createApp, h, ref } from "vue"
-    import AttorneyUrlModal from "@/components/modals/editAttorneyUrl/template.vue"
+    import EditAttorneyUrlVue from "@/components/modals/editAttorneyUrl/editAttorneyUrlVue.vue"
 
 // FUNCTIONS
     export function openAttorneyUrlModal(opts: {
@@ -18,7 +18,7 @@
 
         const app = createApp({
             render() {
-                return h(AttorneyUrlModal, {
+                return h(EditAttorneyUrlVue, {
                     title: opts.title ?? "Посилання адвоката",
                     employeeId: opts.employeeId,
                     currentUrl: urlRef.value,
