@@ -40,6 +40,7 @@ const auth = useAuthStore()
 
 // import modals
 import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
+import { openEditEmailListModal } from "@/components/modals/editEmailList/script"
 import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
 import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
 import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
@@ -61,6 +62,15 @@ function handleEditEmailNotes(email: EmailShortDTO) {
     employee.value.emails = employee.value.emails.map(e =>
         e.id === updated.id ? updated : e
     )
+  })
+}
+
+// edit email list
+
+function handleEditEmailList(emails: EmailShortDTO[]) {
+  openEditEmailListModal(emails,  (updated: EmailShortDTO[]) => {
+    if (!employee.value) return
+    employee.value.emails = updated
   })
 }
 
@@ -200,7 +210,7 @@ onMounted(() => {
                       :src="EditImg2"
                       size="sm-icon"
                       alt="Редагувати перелік електронних адрес"
-                      @click=""
+                      @click="handleEditEmailList(employee?.emails)"
                       title="Редагувати перелік електронних адрес">
                   ></BaseImage>
 

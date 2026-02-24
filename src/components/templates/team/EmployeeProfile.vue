@@ -3,7 +3,7 @@
 <script setup lang="ts">
   // ===== IMPORT TOOLS ===== //
     // import general
-    import { onMounted } from 'vue'
+    import { onMounted, computed } from 'vue'
     import { storeToRefs } from 'pinia'
     import { useRoute } from 'vue-router'
 
@@ -32,6 +32,7 @@
     import AddressImg from '@/assets/img/address.png'
     import EditImg from '@/assets/img/edit.png'
     import LicenseImg from '@/assets/img/certificate.png'
+    import FeedbackImg from '@/assets/img/feedback.svg'
 
     // import stores
     import { useEmployeeFullGetStore } from '@/stores/useEmployee'
@@ -41,15 +42,17 @@
     import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
     import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
     import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
+    import { openFeedbacksModal } from "@/components/modals/openFeedback/script";
+    import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
     import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
     import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"
-    import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
     import type { AddressShort } from "@/model_schemas/models/components/address.model"
     import type { AddressShortDTO } from "@/model_schemas/dto/components/address.dto"
+    import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
 
     // load API
     const store = useEmployeeFullGetStore()
-    const { employee} = storeToRefs(store)
+    const { employee } = storeToRefs(store)
 
     // РОУТЕРИ
     const route = useRoute()
@@ -61,9 +64,9 @@
       if (!employee.value?.emails) return
       employee.value.emails = employee.value.emails.map(e =>
           e.id === updated.id ? updated : e
-      )
-    })
-  }
+        )
+      })
+    }
 
     // edit phone notes
     function handleEditPhoneNotes(email: PhoneShortDTO) {
@@ -71,9 +74,9 @@
       if (!employee.value?.phones) return
       employee.value.phones = employee.value.phones.map(e =>
           e.id === updated.id ? updated : e
-      )
-    })
-  }
+        )
+      })
+    }
 
     // edit address notes
     function handleEditAddressNotes(address: AddressShort) {
@@ -81,26 +84,51 @@
       ...address,
       notes: address.notes ?? null,
     } as unknown as AddressShortDTO
-
     openEditAddressNotesModal(dto, (updatedDto) => {
       if (!employee.value?.addresses) return
       const updatedModel = mapAddressShort(updatedDto)
       employee.value.addresses = employee.value.addresses.map(a =>
           a.id === updatedModel.id ? updatedModel : a
+        )
+      })
+    }
+
+    // open feedback modal
+    type FeedbackOwner = { feedbacks?: FeedbackShortDTO[] | null }
+    function handleOpenFeedbacks(
+        entity: FeedbackOwner,
+        opts: { employeeCode?: string | null; elementCode?: string | null; title: string },
+    ) {
+      const feedbacksRef = computed(() => entity.feedbacks ?? [])
+
+      if (!opts.employeeCode || !opts.elementCode) {
+        console.warn("Cannot open feedbacks modal: missing codes", opts)
+        return
+      }
+      openFeedbacksModal(
+          () => entity.feedbacks ?? [],
+          opts.employeeCode!,
+          opts.elementCode!,
+          opts.title,
+          async () => {
+            const employeeId = employee.value?.Id
+            if (!employeeId) return
+            await store.fetchEmployeeFullGet(employeeId)
+          }
       )
-    })
-  }
+    }
+
 
 // ЗБІР MOUNT
-  onMounted(() => {
-    const id = Number(route.params.id)
+    onMounted(() => {
+      const id = Number(route.params.id)
 
-    if (!Number.isNaN(id)) {
-      store.fetchEmployeeFullGet(id)
-    } else {
-      console.error("Не вдалось завантажити профайл співробітника")
-    }
-  })
+      if (!Number.isNaN(id)) {
+        store.fetchEmployeeFullGet(id)
+      } else {
+        console.error("Не вдалось завантажити профайл співробітника")
+      }
+    })
 </script>
 
 <template>
@@ -139,18 +167,22 @@
                       : DefaultAvatar"
                   size="lg"
                   alt="Фото працівника"
-                  title="Фото працівника">
+                  title="Фото працівника"
+                  shadow="norm">
               </BaseImage>
               <ContentContainer
                 name="Контейнер з ПІБ, :(посадою та датою народження)"
                 flex="column"
-                padding="left">
+                padding="left"
+                style="margin-left: 1vw">
 
   <!-- ПІБ -->
-                  <span class="title_string" title="ПІБ працівника">{{
-                      employee?.FullName
-                          ? employee?.FullName
-                          : 'Відсутні дані'}}
+                  <span
+                    class="title_string"
+                    title="ПІБ працівника">
+                      {{employee?.FullName
+                            ? employee?.FullName
+                            : 'Відсутні дані'}}
                   </span>
                   <BaseLine size="half"></BaseLine>
 
@@ -213,34 +245,74 @@
                         <BaseImage
                             :src="EmailImg"
                             size="sm-icon"
-                            alt="Перейти до профілю співробітника">
+                            alt="Іконка електронної пошти">
                         </BaseImage>
                       </td>
-                      <td class="important_text"> {{ email.email }} </td>
-                      <td class="notes_string"> {{ email.notes }} </td>
+                      <td
+                          class="important_text"
+                          title="Адреса електронної пошти">
+                        {{ email.email }}
+                      </td>
+                      <td
+                          class="notes_string"
+                          :title="'Нотатки до електронної пошти '+email.email">
+                        {{ email.notes }}
+                      </td>
                       <td>
                         <ContentContainer
                             padding="none"
                             flex="row"
                             no-background="true">
                           <BaseButton
+                              name="Кнопка відправки електронного листа"
                               size="sm"
                               @click="sendEmail(email.email)"
                               :title="'Надіслати електронного листа на ' + email.email">
-                            <BaseImage  :src="EmailImg" size="icon"/>
+                            <BaseImage :src="EmailImg" size="icon"/>
                           </BaseButton>
                           <BaseButton
+                              name="Кнопка перегляду глобальних коментарів"
+                              size="sm"
+                              :title="'Переглянути глобальні коментарі до ' + email.email"
+                              alt="Кнопка глобальних коментарів"
+                              @click="handleOpenFeedbacks(email, {
+                                title: email.email,
+                                employeeCode: employee?.global_code,
+                                elementCode: email.global_code,
+                              })">
+                            <ContentContainer
+                                no-background="true"
+                                padding="none"
+                                divStyle="icon_wrapper">
+                              <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
+                              <ContentContainer
+                                  name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
+                                  :title="`Кількість глобальних коментарів для ` + email.email"
+                                  padding="none"
+                                  class="counter_badge"
+                                  divStyle="counter_badge"
+                                  v-if="email.feedbacks?.length > 0">
+                                {{ email.feedbacks.length > 99 ? "99+" : email.feedbacks.length }}
+                              </ContentContainer>
+                            </ContentContainer>
+                          </BaseButton>
+                          <BaseButton
+                              name="Кнопка редагування нотаток"
                               size="sm"
                               @click="handleEditEmailNotes(email)"
-                              title="Редагувати нотатки">
-                            <BaseImage  :src="EditImg" size="icon"/>
+                              :title="`Редагувати нотатки до ` + email.email">
+                            <BaseImage :src="EditImg" size="icon"/>
                           </BaseButton>
                         </ContentContainer>
                       </td>
                     </tr>
                   </template>
                 </BaseTableList>
-                <span class="text_no_data" v-else> Відсутні дані про електронні адреси </span>
+                <span
+                    v-else
+                    title="За особою не зареєстровано жодної електронної адреси"
+                    class="text_no_data"
+                > Відсутні дані про електронні адреси </span>
               </BaseCollapse>
               <BaseLine width="think"/>
 
@@ -266,8 +338,16 @@
                             alt="Перейти до профілю співробітника">
                         </BaseImage>
                       </td>
-                      <td class="important_text"> {{ phone.phone_number }} </td>
-                      <td class="notes_string"> {{ phone.notes }} </td>
+                      <td
+                          title="Контактний номер телефону"
+                          class="important_text">
+                        {{ phone.phone_number }}
+                      </td>
+                      <td
+                          :title="'Нотатки до номеру телефону '+ phone.phone_number"
+                          class="notes_string">
+                        {{ phone.notes }}
+                      </td>
                       <td>
                         <ContentContainer
                             padding="none"
@@ -276,8 +356,32 @@
                             justifyContent="end">
                           <BaseButton
                               size="sm"
-                              @click="handleEditPhoneNotes(phone)"
-                              title="Редагувати нотатки">
+                              name="Кнопка перегляду глобальних коментарів"
+                              :title="'Переглянути глобальні коментарі до ' + phone.phone_number"
+                              alt="Кнопка глобальних коментарів"
+                              @click="handleOpenFeedbacks(phone, {
+                                title: phone.phone_number,
+                                employeeCode: employee?.global_code,
+                                elementCode: phone.global_code,
+                              })">
+                            <ContentContainer no-background="true" padding="none" divStyle="icon_wrapper">
+                              <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
+                              <ContentContainer
+                                  name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
+                                  :title="`Кількість глобальних коментарів для ` + phone.phone_number"
+                                  padding="none"
+                                  class="counter_badge"
+                                  divStyle="counter_badge"
+                                  v-if="phone.feedbacks?.length > 0">
+                                {{ phone.feedbacks.length > 99 ? "99+" : phone.feedbacks.length }}
+                              </ContentContainer>
+                            </ContentContainer>
+                          </BaseButton>
+                          <BaseButton
+                              size="sm"
+                              name="Кнопка редагування нотаток"
+                              :title="`Редагувати нотатки до ` + phone.phone_number"
+                              @click="handleEditPhoneNotes(phone)">
                             <BaseImage  :src="EditImg" size="icon"/>
                           </BaseButton>
                         </ContentContainer>
@@ -285,7 +389,12 @@
                     </tr>
                   </template>
                 </BaseTableList>
-                <span class="text_no_data" v-else> Відсутні дані про контактні номери телефону </span>
+                <span
+                    v-else
+                    title="За особою не зареєстровано жодного контактного номеру телефону"
+                    class="text_no_data">
+                  Відсутні дані про контактні номери телефону
+                </span>
               </BaseCollapse>
               <BaseLine width="think"/>
 
@@ -313,12 +422,16 @@
                             alt="Перейти до профілю співробітника">
                         </BaseImage>
                       </td>
-                      <td class="important_text"> {{
+                      <td
+                          title="Адреса"
+                          class="important_text"> {{
                           address?.address
                               ? address.address
                               : "Помилка відображення адреси" }}
                       </td>
-                      <td class="notes_string"> {{
+                      <td
+                          :title="`Нотатки до адреси: ` + address.address"
+                          class="notes_string"> {{
                           address?.notes
                               ? address.notes
                               : "" }}
@@ -331,14 +444,39 @@
                             justifyContent="end">
                           <BaseButton
                               size="sm"
+                              name="Кнопка відкриття адреси на мапі"
                               @click="openInGoogleMaps(address.address)"
-                              title="Показати на мапі">
+                              :title="`Показати на мапі адресу: ` + address.address">
                             <BaseImage  :src="AddressImg" size="icon"/>
                           </BaseButton>
                           <BaseButton
                               size="sm"
+                              name="Кнопка перегляду глобальних коментарів"
+                              :title="'Переглянути глобальні коментарі до ' + address.address"
+                              alt="Кнопка глобальних коментарів"
+                              @click="handleOpenFeedbacks(address, {
+                                title: address.address,
+                                employeeCode: employee?.global_code,
+                                elementCode: address.global_code,
+                              })">
+                            <ContentContainer no-background="true" padding="none" divStyle="icon_wrapper">
+                              <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
+                              <ContentContainer
+                                  name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
+                                  :title="`Кількість глобальних коментарів для ` + address.address"
+                                  padding="none"
+                                  class="counter_badge"
+                                  divStyle="counter_badge"
+                                  v-if="address.feedbacks?.length > 0">
+                                {{ address.feedbacks.length > 99 ? "99+" : address.feedbacks.length }}
+                              </ContentContainer>
+                            </ContentContainer>
+                          </BaseButton>
+                          <BaseButton
+                              size="sm"
                               @click="handleEditAddressNotes(address)"
-                              title="Редагувати нотатки">
+                              name="Кнопка редагування нотаток"
+                              :title="`Редагувати нотатки до ` + address.address">
                             <BaseImage  :src="EditImg" size="icon"/>
                           </BaseButton>
                         </ContentContainer>
@@ -387,11 +525,12 @@
                               no-background="true"
                               justifyContent="end">
                             <BaseButton
+                                name="Кнопка переходу на профіль в ЄРАУ"
+                                :title="employee?.AttorneyUrl
+                                  ? 'Перейти на сторінку профілю адвоката в ЄРАУ: ' + employee?.AttorneyUrl
+                                  : 'Профіль в ЄРАУ відсутній'"
                                 :disabled="!employee?.AttorneyUrl"
                                 @click="employee?.AttorneyUrl && openLink(employee.AttorneyUrl)"
-                                :title="employee?.AttorneyUrl
-                                ? 'Відкрити профіль в ЄРАУ'
-                                : 'Профіль в ЄРАУ відсутній'"
                                 size="sm">
                               <BaseImage  :src="UNBALink" size="icon"/>
                             </BaseButton>
@@ -420,6 +559,7 @@
                               Свідоцтво про право на зайняття адвокатською діяльністю
                             </ContentContainer>
                             <ContentContainer
+                                title="Реквізити Свідоцтва про право на зайняття адвокатською діяльністю"
                                 v-if="employee?.LicenseNumber"
                                 class="text_string"
                                 no-background="true"
@@ -436,17 +576,19 @@
                               no-background="true"
                               padding="none">
                             <BaseButton
-                                v-if="employee?.LicenseFile"
+                                name="Кнопка відкриття файлу Свідоцтва"
                                 size="sm"
-                                @click="openPDF(employee?.LicenseFile)"
-                                title="Відкрити PDF-файл Свідоцтва">
+                                :disabled="!employee?.LicenseFile"
+                                @click="employee?.LicenseFile && openPDF(employee.LicenseFile)"
+                                :title="employee?.LicenseFile ? `Відкрити PDF-файл Свідоцтва` : 'PDF-файл Свідоцтва відсутній'">
                               <BaseImage  :src="OpenFile" size="icon"/>
                             </BaseButton>
                             <BaseButton
+                                name="Кнопка завантаження файлу Свідоцтва"
                                 size="sm"
-                                v-if="employee?.LicenseFile"
-                                @click="openPDF(employee?.LicenseFile,true)"
-                                title="Завантажити PDF-файл Свідоцтва">
+                                :disabled="!employee?.LicenseFile"
+                                @click="employee?.LicenseFile && openPDF(employee?.LicenseFile,true)"
+                                :title="employee?.LicenseFile ? `Завантажити PDF-файл Свідоцтва` : 'PDF-файл Свідоцтва відсутній'">
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>
                           </ContentContainer>
@@ -474,7 +616,8 @@
                               Посвідчення адвоката
                             </ContentContainer>
                             <ContentContainer
-                                v-if="employee?.LicenseNumber"
+                                title="Реквізити посвідчення адвоката"
+                                v-if="employee?.CertificateNumber"
                                 class="text_string"
                                 no-background="true"
                                 padding="none">
@@ -485,22 +628,24 @@
                         </td>
                         <td>
                           <ContentContainer
-                              name="Кнопки Свідоцтва"
+                              name="Кнопки Посвідчення"
                               flex="row"
                               no-background="true"
                               padding="none">
                             <BaseButton
-                                v-if="employee?.LicenseFile"
+                                name="Кнопка відкриття файлу посвідчення"
                                 size="sm"
-                                @click="openPDF(employee?.LicenseFile)"
-                                title="Відкрити PDF-файл Свідоцтва">
+                                :disabled="!employee?.CertificateFile"
+                                @click="employee?.CertificateFile && openPDF(employee?.CertificateFile)"
+                                :title="employee?.CertificateFile ? 'Відкрити PDF-файл Посвідчення' : 'PDF-файл Посвідчення відсутній'">
                               <BaseImage  :src="OpenFile" size="icon"/>
                             </BaseButton>
                             <BaseButton
+                                name="Кнопка завантаження файлу посвідчення"
                                 size="sm"
-                                v-if="employee?.LicenseFile"
-                                @click="openPDF(employee?.LicenseFile,true)"
-                                title="Завантажити PDF-файл Свідоцтва">
+                                :disabled="!employee?.CertificateFile"
+                                @click="employee?.CertificateFile && openPDF(employee?.CertificateFile,true)"
+                                :title="employee?.CertificateFile ? `Завантажити PDF-файл Посвідчення` : 'PDF-файл Посвідчення відсутній'">
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>
                           </ContentContainer>

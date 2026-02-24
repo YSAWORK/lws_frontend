@@ -4,6 +4,7 @@
 import type { EmailShort } from "@/model_schemas/models/components/email.model"
 import type { PhoneShort } from "@/model_schemas/models/components/phone.model"
 import type { AddressShort } from "@/model_schemas/models/components/address.model"
+import type { FeedbackShort } from "@/model_schemas/models/feedback/feedback.model"
 
 
 // EMPLOYEE
@@ -44,6 +45,8 @@ export interface EmployeeFullGet {
     emails: EmailShort[] | null
     phones: PhoneShort[] | null
     addresses: AddressShort[] | null
+    feedbacks: FeedbackShort[] | null
+    global_code: string | null
 
     WebCourt: boolean | null
 }

@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<{
   flex?: 'row' | 'column'
   row_width?: string
   disabled?: boolean
+  maxHeight?: string
+  overflow?: 'auto' | 'hidden' | 'scroll'
 }>(), {
   size: '100',
   type: 'primary',
@@ -51,6 +53,9 @@ watch(() => props.modelValue, () => autoResize())
           `size-${size}`,
           `type-${type}`,]"
           :disabled="disabled"
+          :style="{
+             ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {})
+          }"
       />
 
   </label>

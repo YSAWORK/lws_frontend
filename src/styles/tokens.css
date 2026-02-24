@@ -45,6 +45,7 @@
 
     /* BORDER */
     --border-radius: 5px;
+    --counter-radius: 10px;
     --border-radius-image: 0.5vw;
     --shadow-light: 0 6px 16px rgba(0, 0, 0, .06);
     --shadow-dark: 0 6px 16px rgba(0, 0, 0, .46);

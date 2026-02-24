@@ -6,6 +6,7 @@
     size?: 'sm' | 'md' | 'lg' | 'icon' | 'sm-icon'
     src?: string
     alt?: string
+    shadow?: 'norm'
   }>()
 </script>
 
@@ -13,14 +14,16 @@
   <img class="base-image"
        :src="src"
        :alt="alt"
-       :class="[`size-${size}`]"/>
+       :class="[
+           `size-${size}`,
+           `shadow-${shadow}`
+       ]"/>
 </template>
 
 <style scoped>
   /* === BASE IMAGE === */
   .base-image {
-    border-radius: var(--border-radius-image);
-    box-shadow: var(--shadow-dark);
+    background: none;
   }
 
   /* === SIZE === */
@@ -67,6 +70,11 @@
     border: none;
     box-shadow: none;
     border-radius: 0;
+  }
+
+  .shadow-norm {
+    box-shadow: var(--shadow-dark);
+    border-radius: var(--border-radius-image);
   }
 
 

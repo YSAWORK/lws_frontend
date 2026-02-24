@@ -2,6 +2,7 @@
 
 // IMPORT TOOLS
 import { z } from "zod"
+import {FeedbackShortSchema} from "@/model_schemas/dto/feedback/feedback.dto";
 
 // ADDRESS SHORT
 export const AddressShortSchema = z.object({
@@ -16,6 +17,8 @@ export const AddressShortSchema = z.object({
     building: z.string(),
     apartment: z.string().nullable(),
     notes: z.string().nullable(),
+    feedbacks: z.array(FeedbackShortSchema),
+    global_code: z.string(),
 })
 
 export type AddressShortDTO = z.infer<typeof AddressShortSchema>

@@ -16,8 +16,8 @@ const isOpen = ref(false)
         `marginStyle-${marginStyle}`,
        ]">
 
-    <div class="collapse_header" @click="isOpen = !isOpen">
-      <div class="subtitle_string_type_h3" >
+    <div class="collapse_header" >
+      <div class="subtitle_string_type_h3" @click="isOpen = !isOpen">
         {{ title }}
       </div>
       <div>

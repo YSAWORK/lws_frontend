@@ -10,6 +10,9 @@ defineProps<{
   alignItems?: 'center' | 'start' | 'end'
   justifyContent?: 'center' | 'start' | 'end' | 'between'
   columns?: string
+  divStyle? : 'icon_wrapper' | 'counter_badge'
+  maxHeight?: string
+  overflow?: 'auto' | 'hidden' | 'scroll'
 }>()
 
 </script>
@@ -25,8 +28,12 @@ defineProps<{
           `no-background-${noBackground}`,
           `align-items-${alignItems}`,
           `justifyContent-${justifyContent}`,
+          `divStyle-${divStyle}`,
       ]"
-      :style="columns ? { display: 'grid', gridTemplateColumns: columns } : {}"
+      :style="{
+        ...(columns ? { display: 'grid', gridTemplateColumns: columns } : {}),
+        ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {})
+      }"
   >
     <slot />
   </div>
@@ -92,6 +99,28 @@ defineProps<{
 
   .justifyContent-end {
     justify-content: flex-end;
+  }
+
+  .divStyle-icon_wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .divStyle-counter_badge {
+    position: absolute;
+    top:-8px;
+    right:-8px;
+    width: 1vw;
+    min-width: 15px;
+    height: 1vw;
+    min-height: 15px;
+    background: var(--button-primary-hover);
+    color: var(--font-primary);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--counter-radius);
   }
 
 </style>

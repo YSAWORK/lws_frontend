@@ -9,6 +9,7 @@ import type {EmployeeFullGet} from "@/model_schemas/models/person/employee.model
 import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
 import { mapEmailShort } from "@/model_schemas/mapped/components/email.mapped"
 import { mapPhoneShort } from "@/model_schemas/mapped/components/phone.mapped"
+import {mapFeedbackShort} from "@/model_schemas/mapped/feedback/feedback.mapped";
 
 
 // EMPLOYEE MAP
@@ -54,7 +55,9 @@ export function mapEmployeeFullGet(dto: EmployeeFullGetDTO): EmployeeFullGet {
         emails: dto.emails.map(mapEmailShort),
         phones: dto.phones.map(mapPhoneShort),
         addresses: dto.addresses.map(mapAddressShort),
+        feedbacks: dto.feedbacks.map(mapFeedbackShort),
 
         WebCourt: dto.is_web_court,
+        global_code: dto.global_code
     }
 }

@@ -3,6 +3,7 @@
 // IMPORT TOOLS
 import type { AddressShortDTO } from "@/model_schemas/dto/components/address.dto"
 import type { AddressShort } from "@/model_schemas/models/components/address.model"
+import {mapFeedbackShort} from "@/model_schemas/mapped/feedback/feedback.mapped";
 
 // ADDRESS SHORT
 export function mapAddressShort(dto: AddressShortDTO): AddressShort {
@@ -20,5 +21,7 @@ export function mapAddressShort(dto: AddressShortDTO): AddressShort {
         id: dto.id,
         address: parts.filter(Boolean).join(", "),
         notes: dto.notes ?? null,
+        feedbacks: dto.feedbacks.map(mapFeedbackShort),
+        global_code: dto.global_code
     }
 }

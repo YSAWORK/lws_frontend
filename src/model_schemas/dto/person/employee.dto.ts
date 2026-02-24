@@ -5,6 +5,7 @@ import { z } from "zod"
 import { EmailShortSchema } from "@/model_schemas/dto/components/email.dto"
 import { PhoneShortSchema } from "@/model_schemas/dto/components/phone.dto"
 import { AddressShortSchema } from "@/model_schemas/dto/components/address.dto"
+import { FeedbackShortSchema } from "@/model_schemas/dto/feedback/feedback.dto"
 
 // EMPLOYEE
 // EMPLOYEE SHORT
@@ -57,8 +58,10 @@ export const EmployeeFullGetSchema = z.object({
     emails: z.array(EmailShortSchema),
     phones: z.array(PhoneShortSchema),
     addresses: z.array(AddressShortSchema),
+    feedbacks: z.array(FeedbackShortSchema),
 
     is_web_court: z.boolean(),
+    global_code: z.string()
 
 })
 

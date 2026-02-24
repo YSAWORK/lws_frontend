@@ -148,6 +148,12 @@ body {
     font-weight: bold;
 }
 
+.important_no_data_text {
+    color: var(--text-disabled);
+    font-size: var(--label-font-size);
+    font-weight: bold;
+}
+
 .notes_string {
     font-size: var(--font-size-note);
     font-style: italic;
@@ -165,7 +171,6 @@ body {
     color: var(--text-primary);
 }
 
-/* === HEADER === */
 .modal_overlay {
     width: auto;
     position: fixed;

@@ -5,8 +5,8 @@ import EditEmailListModal from "@/components/modals/editEmailList/template.vue"
 import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
 
 export function openEditEmailListModal(
-    email: EmailShortDTO,
-    onSaved: (updated: EmailShortDTO) => void,
+    emails: EmailShortDTO[],
+    onSaved: (updated: EmailShortDTO[]) => void,
 ): void {
     const host = document.createElement("div")
     document.body.appendChild(host)
@@ -19,8 +19,8 @@ export function openEditEmailListModal(
     const app = createApp({
         render() {
             return h(EditEmailListModal, {
-                email,
-                onSaved: (updated: EmailShortDTO) => {
+                emails,
+                onSaved: (updated: EmailShortDTO[]) => {
                     onSaved(updated)
                     close()
                 },
