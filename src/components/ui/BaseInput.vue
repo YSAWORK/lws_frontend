@@ -24,12 +24,14 @@
 </script>
 
 <template>
-  <label class="input-text-label"
+  <label
         :class="[
           `flex-${flex}`,
           `justify-${justify}`,]">
-    <span class="input-label-text"
-          :style="[`width:${row_width}`]">
+    <span
+          style="font-size: var(--input-font-size)"
+          :style="[`width:${row_width}`,
+    ]">
       <slot />
     </span>
     <input
@@ -103,10 +105,5 @@
   /* === FLEX DIRECTION === */
   .flex-row {flex-direction: row; gap: 0.5vw;}
   .flex-column {flex-direction: column; gap: 0;}
-
-  .input-text-label {
-    display: flex;
-    font-size: var(--label-font-size);
-  }
 
 </style>

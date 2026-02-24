@@ -4,7 +4,7 @@
 defineProps<{
   size?: 'fit-content' | '50' | 'full'
   flex?: 'column' | 'row'
-  padding?: 'none' | 'string' | 'bottom' | 'bottom-left' | 'left'
+  padding?: 'none' | 'string' | 'bottom' | 'bottom-left' | 'left' | 'top'
   gap?: '1' | '2' | '5'
   noBackground?: 'true'
   alignItems?: 'center' | 'start' | 'end'
@@ -67,6 +67,10 @@ defineProps<{
 
   .padding-left {
     padding: 0 0 0 1vw;
+  }
+
+  .padding-top {
+    padding: 1vw 0 0 0;
   }
 
   .flex-row {
