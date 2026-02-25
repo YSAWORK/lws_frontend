@@ -5,19 +5,19 @@
 <script setup lang="ts">
   withDefaults(defineProps<{
     size?: 'sm' | 'md' | 'lg' | '100' | '50' | '25' | 'auto'
-    type?: 'primary' | 'success' | 'error'
     justify?: 'left' | 'center' | 'right'
     flex?: 'row' | 'column'
     row_width?: string
     disabled?: boolean
     modelValue: string
+    type?: HTMLInputElement["type"]
   }>(), {
     size: '50',
-    type: 'primary',
     justify: 'left',
     flex: 'row',
     row_width: '10vw',
     disabled: false,
+    type: 'text',
   })
 
   const emit = defineEmits<{ (e: "update:modelValue", v: string): void }>()
@@ -35,6 +35,7 @@
       <slot />
     </span>
     <input
+        :type="type"
         class="base_input"
         :class="[
           `size-${size}`,

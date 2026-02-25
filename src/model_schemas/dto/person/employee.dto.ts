@@ -61,8 +61,7 @@ export const EmployeeFullGetSchema = z.object({
     feedbacks: z.array(FeedbackShortSchema),
 
     is_web_court: z.boolean(),
-    global_code: z.string()
-
+    global_code: z.string(),
 })
 
 export type EmployeeFullGetDTO = z.infer<typeof EmployeeFullGetSchema>

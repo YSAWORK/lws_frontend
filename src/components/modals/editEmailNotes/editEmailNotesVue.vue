@@ -51,7 +51,7 @@
 </script>
 
 <template>
-  <div class="modal_overlay" @click.self="close">
+  <div class="modal_overlay" >
     <div class="modal_box">
       <ContentContainer>
         <h3 class="chapter_title" style="text-align: center">Нотатки до email: <span class="important_text">{{ props.email.email }}</span></h3>

@@ -112,10 +112,7 @@
 </script>
 
 <template>
-  <div
-      class="modal_overlay"
-      @click.self="close">
-
+  <div class="modal_overlay" >
     <!-- Модальне вікно -->
     <div class="modal_box">
       <ContentContainer name="Контейнер модального вікна">
@@ -152,15 +149,6 @@
 
         <ContentContainer padding="none" style="display: flex; justify-content: center;">
           <BaseButton
-              name="Кнопка закриття модального вікна"
-              title="Закрити вікно без змін"
-              size="lg"
-              @click="close"
-              :disabled="isSubmitting"
-          >
-            Скасувати
-          </BaseButton>
-          <BaseButton
               name="Кнопка внесення затвердження змін"
               :title="canSubmit
                 ? 'Змінити посилання на ЄРАУ'
@@ -170,6 +158,15 @@
               :disabled="!canSubmit"
           >
             {{ isSubmitting ? "Збереження..." : "Зберегти" }}
+          </BaseButton>
+          <BaseButton
+              name="Кнопка закриття модального вікна"
+              title="Закрити вікно без змін"
+              size="lg"
+              @click="close"
+              :disabled="isSubmitting"
+          >
+            Скасувати
           </BaseButton>
         </ContentContainer>
       </ContentContainer>

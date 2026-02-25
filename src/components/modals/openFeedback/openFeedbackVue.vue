@@ -88,7 +88,7 @@
 </script>
 
 <template>
-  <div class="modal_overlay" @click.self="close">
+  <div class="modal_overlay">
     <div class="modal_box">
       <ContentContainer>
         <h3

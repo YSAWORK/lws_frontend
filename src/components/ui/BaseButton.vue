@@ -4,7 +4,7 @@
 <script setup lang="ts">
   withDefaults(defineProps<{
     variant?: 'light' | 'white'
-    size?: 'sm' | 'md' | 'lg' | 'icon'
+    size?: 'sm' | 'md' | 'lg' | 'icon' | "full"
     border?: 'none' | 'small' | 'large'
     disabled?: boolean
   }>(), {
@@ -94,7 +94,9 @@
   .size-sm { width: 50px; height: 50px; font-size: var(--btn-font-size-sm); padding: 0}
   .size-md { width: 150px; height: 50px; font-size: var(--btn-font-size-md); }
   .size-lg { width: 300px; height: 50px; font-size: var(--btn-font-size-lg); }
+  .size-full { width: 100%; height: 50px; font-size: var(--btn-font-size-lg); }
   .size-icon {width: 30px; height: 30px; min-height: 12px; min-width: 12px; padding: 0; transition: none;}
+
 
   /* === BORDER === */
   .border-none { border: none; }

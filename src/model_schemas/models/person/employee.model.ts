@@ -5,6 +5,7 @@ import type { EmailShort } from "@/model_schemas/models/components/email.model"
 import type { PhoneShort } from "@/model_schemas/models/components/phone.model"
 import type { AddressShort } from "@/model_schemas/models/components/address.model"
 import type { FeedbackShort } from "@/model_schemas/models/feedback/feedback.model"
+import type {AttorneyCommission} from "@/model_schemas/models/libraries/attorney_commissions.model";
 
 
 // EMPLOYEE

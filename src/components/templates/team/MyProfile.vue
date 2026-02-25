@@ -33,6 +33,7 @@ import AddressImg from '@/assets/img/address.png'
 import EditImg from '@/assets/img/edit.png'
 import LicenseImg from '@/assets/img/certificate.png'
 import FeedbackImg from '@/assets/img/feedback.svg'
+import DeleteImg from '@/assets/img/delete.svg'
 
 // import stores
 import { useMeFullGetStore } from '@/stores/useMeProfile'
@@ -45,6 +46,7 @@ import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/
 import { openFeedbacksModal } from "@/components/modals/openFeedback/openFeedbackTs";
 import { openAttorneyUrlModal } from "@/components/modals/editAttorneyUrl/editAttorneyUrlTs"
 import { openEditTextAreaModal } from "@/components/modals/editTextArea/editTextAreaTs"
+import { openEditLicenseModal } from "@/components/modals/openEditLicenseModal/openEditLicenseModalTs"
 import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
 import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
 import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"
@@ -149,34 +151,54 @@ const { employee } = storeToRefs(store)
     input.value = ""
 
     if (!file) return
-
-    // validate
     if (file.type !== "application/pdf") {
       UploadError.value = "Потрібен саме PDF-файл."
       return
     }
-
     const maxMb = 15
     const mb = file.size / 1024 / 1024
     if (mb > maxMb) {
       UploadError.value = `Файл завеликий (${mb.toFixed(1)}MB). Максимум: ${maxMb}MB.`
       return
     }
-
     const employeeId = employee.value?.Id
     if (!employeeId) {
       UploadError.value = "Не знайдено employeeId."
       return
     }
-
-    // upload
     await uploadEmployeeFile(employeeId, field, file)
-
-    // refresh employee so employee.LicenseFile becomes актуальним
     await store.fetchMeFullGet()
   }
 
-  // edit Biography
+  // Редагування Свідоцтва про право на зайняття адвокатською діяльністю
+  function handleEditLicense() {
+    if (!employee.value) return
+
+    openEditLicenseModal({
+      employeeId: employee.value.Id,
+      title: "Свідоцтво про право на зайняття адвокатською діяльністю",
+
+      current: {
+        Number: employee.value.LicenseNumber,
+        Date: employee.value.LicenseDate,
+        Commission: employee.value.LicenseCommission,
+        File: employee.value.LicenseFile,
+      },
+
+      fieldMap: {
+        number: "series_number_license",
+        date: "date_issued_license",
+        commission: "issuing_organization_license",
+        file: "attorney_license_file",
+      },
+
+      onSaved: async () => {
+        await store.fetchMeFullGet()
+      },
+    })
+  }
+
+  // РЕдагувати Біографію
   function handleEditBiography(id: number) {
     openEditTextAreaModal({
       title: "Біографія працівника",
@@ -358,6 +380,13 @@ onMounted(() => store.fetchMeFullGet())
                               {{ email.feedbacks.length > 99 ? "99+" : email.feedbacks.length }}
                             </ContentContainer>
                           </ContentContainer>
+                        </BaseButton>
+                        <BaseButton
+                            name="Кнопка відправки електронного листа"
+                            size="sm"
+                            @click="sendEmail(email.email)"
+                            :title="'Надіслати електронного листа на ' + email.email">
+                          <BaseImage :src="DeleteImg" size="icon"/>
                         </BaseButton>
                         <BaseButton
                             name="Кнопка редагування нотаток"
@@ -663,22 +692,14 @@ onMounted(() => store.fetchMeFullGet())
                             <BaseImage  :src="DownloadFile" size="icon"/>
                           </BaseButton>
                           <BaseButton
-                              name="Кнопка вибору нового файлу Свідоцтва"
-                              title="Обрати новий файл Свідоцтва (PDF)"
+                              name="Кнопка редагування даних свідоцтва"
+                              title="Редагувати дані Свідоцтва"
+                              styleType="secondary"
                               size="sm"
-                              @click="triggerPickFile"
-                              :disabled="isUploading"
+                              @click="handleEditLicense"
                           >
                             <BaseImage :src="EditImg" size="icon" />
                           </BaseButton>
-                          <input
-                              name="Технічний елемент для вибору файлу Свідоцтва"
-                              ref="FileInput"
-                              type="file"
-                              accept="application/pdf"
-                              style="display:none"
-                              @change="onPickFile($event,'attorney_license_file')"
-                          />
                         </ContentContainer>
                       </td>
                     </tr>
