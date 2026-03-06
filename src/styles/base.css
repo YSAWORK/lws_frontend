@@ -161,6 +161,18 @@ body {
     white-space: pre-line;
 }
 
+.collapse_string {
+    font-size: var(--font-size-note);
+    font-style: italic;
+    color: var(--text-disabled);
+    white-space: pre-line;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    word-break: break-word;
+}
+
 .header_link {
     text-decoration: none;
     color: var(--text-button);
@@ -197,3 +209,18 @@ body {
     color: var(--danger-primary);
     font-weight: bold;
 }
+
+/* === INPUT LABEL === */
+    .label-block{
+        display:flex;
+        flex-direction:column;
+        line-height:1.1;
+    }
+    .note_block{
+        font-size: var(--font-size-note);
+        font-style: italic;
+        color: var(--text-disabled);
+        opacity:.8;
+        margin:0;
+        padding:0;
+    }

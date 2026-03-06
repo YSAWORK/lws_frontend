@@ -2,15 +2,16 @@
 import { computed, nextTick, onBeforeUnmount, ref, useSlots, watch } from "vue"
 
 const props = defineProps<{
-  value?: string | number | null
+  modelValue?: string | number | null
   disabled?: boolean
   name?: string
-  size?: "sm" | "md" | "lg" | "100" | "50" | "25" | "auto"
-  maxHeight?: number // px, для випадаючого списку
+  size?: "sm" | "md" | "mds" | "lg" | "100" | "50" | "25" | "auto"
+  maxHeight?: number // px
 }>()
 
 const emit = defineEmits<{
-  (e: "change", event: Event): void
+  (e: "update:modelValue", value: string): void
+  (e: "change", value: string): void // optional: якщо десь треба слухати change
 }>()
 
 const slots = useSlots()
@@ -24,10 +25,15 @@ const hiddenSelectRef = ref<HTMLSelectElement | null>(null)
 // Позиція dropdown
 const pos = ref({ left: 0, top: 0, width: 0 })
 const MH = computed(() => props.maxHeight ?? 240)
+const viewportH = ref(0)
+
+function updateViewportH() {
+  viewportH.value = window.innerHeight
+}
 
 // Для лейбла показуємо selected option text
 const selectedLabel = computed(() => {
-  const v = String(props.value ?? "")
+  const v = String(props.modelValue ?? "")
   return findLabelByValue(v)
 })
 
@@ -53,6 +59,7 @@ async function open() {
   if (props.disabled) return
   isOpen.value = true
   await nextTick()
+  updateViewportH()
   computePosition()
 }
 
@@ -66,7 +73,9 @@ function toggle() {
 }
 
 function onWin() {
-  if (isOpen.value) computePosition()
+  if (!isOpen.value) return
+  updateViewportH()
+  computePosition()
 }
 
 // Закриття по Escape
@@ -74,27 +83,16 @@ function onKeydown(e: KeyboardEvent) {
   if (e.key === "Escape") close()
 }
 
-// Емітимо твій старий change-івент, не ламаючи підпис
-function emitNativeChange() {
-  const el = hiddenSelectRef.value
-  if (!el) return
-
-  // створюємо event
-  const evt = new Event("change", { bubbles: true })
-
-  // важливо: диспатчимо на select — тоді evt.target стане el
-  el.dispatchEvent(evt)
-
-  // і цей же evt передаємо наверх
-  emit("change", evt)
-}
-
 function selectValue(val: string) {
-  const el = hiddenSelectRef.value
-  if (!el) return
+  // 1) оновлюємо v-model (основне)
+  emit("update:modelValue", val)
+  // 2) опційно: change як value (не Event!)
+  emit("change", val)
 
-  el.value = val
-  emitNativeChange()
+  // 3) синхронізуємо hidden select (якщо треба для форм/семантики)
+  const el = hiddenSelectRef.value
+  if (el) el.value = val
+
   close()
 }
 
@@ -103,7 +101,7 @@ function findLabelByValue(val: string): string {
     if (block.kind === "option") {
       if (block.value === val) return block.label
     } else {
-      const hit = block.options.find(o => o.value === val)
+      const hit = block.options.find((o) => o.value === val)
       if (hit) return hit.label
     }
   }
@@ -142,7 +140,12 @@ const parsedOptions = computed<ParsedOpt[]>(() => {
         const groupLabel = String(propsN.label ?? "")
         const groupOpts: { value: string; label: string; disabled?: boolean }[] = []
 
-        const groupChildren = Array.isArray(children?.default?.()) ? children.default() : (Array.isArray(children) ? children : [])
+        const groupChildren = Array.isArray(children?.default?.())
+            ? children.default()
+            : Array.isArray(children)
+                ? children
+                : []
+
         for (const gc of groupChildren) {
           if (gc?.type === "option") {
             const gv = String(gc.props?.value ?? "")
@@ -170,6 +173,14 @@ const parsedOptions = computed<ParsedOpt[]>(() => {
   return out
 })
 
+const dropdownStyle = computed(() => ({
+  left: pos.value.left + "px",
+  width: pos.value.width + "px",
+  maxHeight: MH.value + "px",
+  top: dropUp.value ? "auto" : pos.value.top + "px",
+  bottom: dropUp.value ? viewportH.value - pos.value.top + "px" : "auto",
+}))
+
 watch(isOpen, (v) => {
   if (v) {
     window.addEventListener("resize", onWin)
@@ -191,11 +202,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="base-select-wrap">
-    <!-- Прихований нативний select: зберігаємо слоти option -->
+    <!-- Прихований нативний select (опційно для семантики/форми) -->
     <select
         ref="hiddenSelectRef"
         class="native-select"
-        :value="value ?? ''"
+        :value="String(modelValue ?? '')"
         :disabled="disabled"
         :name="name"
         aria-hidden="true"
@@ -220,24 +231,13 @@ onBeforeUnmount(() => {
     <!-- Dropdown в body -->
     <Teleport to="body">
       <div v-if="isOpen" class="overlay" @click="close">
-        <div
-            class="dropdown"
-            :style="{
-            left: pos.left + 'px',
-            width: pos.width + 'px',
-            maxHeight: MH + 'px',
-            top: dropUp ? 'auto' : pos.top + 'px',
-            bottom: dropUp ? (window.innerHeight - pos.top) + 'px' : 'auto',
-          }"
-            @click.stop
-        >
-          <!-- Рендеримо опції з твого слота -->
+        <div class="dropdown" :style="dropdownStyle" @click.stop>
           <template v-for="block in parsedOptions" :key="block.kind + (block as any).label + (block as any).value">
             <template v-if="block.kind === 'option'">
               <button
                   type="button"
                   class="opt"
-                  :class="{ selected: String(value ?? '') === block.value }"
+                  :class="{ selected: String(modelValue ?? '') === block.value }"
                   :disabled="block.disabled"
                   @click="selectValue(block.value)"
               >
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
                   :key="opt.value"
                   type="button"
                   class="opt"
-                  :class="{ selected: String(value ?? '') === opt.value }"
+                  :class="{ selected: String(modelValue ?? '') === opt.value }"
                   :disabled="opt.disabled"
                   @click="selectValue(opt.value)"
               >
@@ -271,7 +271,6 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
-/* нативний select лишаємо для форми/семантики, але ховаємо */
 .native-select {
   position: absolute;
   opacity: 0;
@@ -280,7 +279,6 @@ onBeforeUnmount(() => {
   height: 1px;
 }
 
-/* тригер у твоєму стилі */
 .base-select {
   height: var(--input-min-height);
   font-size: var(--input-font-size);
@@ -316,14 +314,12 @@ onBeforeUnmount(() => {
   opacity: 0.7;
 }
 
-/* overlay ловить клік “зовні” */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 99999;
 }
 
-/* dropdown fixed — не обрізається модалкою */
 .dropdown {
   position: fixed;
   z-index: 100000;
@@ -335,7 +331,6 @@ onBeforeUnmount(() => {
   padding: 4px 0;
 }
 
-/* option items */
 .opt {
   width: 100%;
   text-align: left;
@@ -349,7 +344,7 @@ onBeforeUnmount(() => {
 }
 
 .opt:hover {
-  background: var(--button-primary)
+  background: var(--button-primary);
 }
 
 .opt.selected {
@@ -368,9 +363,10 @@ onBeforeUnmount(() => {
   opacity: 0.7;
 }
 
-/* === SIZE (твій набір) === */
+/* sizes */
 .size-sm { width: clamp(50px, 2vw, 100px); }
 .size-md { width: clamp(100px, 20vw, 400px); }
+.size-mds { width: clamp(80px, 10vw, 220px); } /* додав під твій mds */
 .size-lg { width: clamp(400px, 40vw, 80000px); }
 .size-100 { width: 100%; }
 .size-50 { width: 50%; }

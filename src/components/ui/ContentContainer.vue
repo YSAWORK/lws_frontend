@@ -6,6 +6,7 @@ defineProps<{
   flex?: 'column' | 'row'
   padding?: 'none' | 'string' | 'bottom' | 'bottom-left' | 'left' | 'top'
   gap?: '1' | '2' | '5'
+  grid?: string
   noBackground?: 'true'
   alignItems?: 'center' | 'start' | 'end'
   justifyContent?: 'center' | 'start' | 'end' | 'between'
@@ -32,7 +33,8 @@ defineProps<{
       ]"
       :style="{
         ...(columns ? { display: 'grid', gridTemplateColumns: columns } : {}),
-        ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {})
+        ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {}),
+        ...(grid ? { display: 'grid', gridTemplateColumns: grid, alignItems: 'start' } : {}),
       }"
   >
     <slot />
@@ -89,6 +91,9 @@ defineProps<{
     gap: 1vw;
   }
 
+  .gap-1 {
+    gap: 1vw;
+  }
   .gap-2 {
     gap: 2vw;
   }
@@ -130,11 +135,9 @@ defineProps<{
   .align-items-center {
     align-items: center;
   }
-
   .align-items-start {
     align-items: flex-start;
   }
-
   .align-items-end {
     align-items: flex-end;
   }

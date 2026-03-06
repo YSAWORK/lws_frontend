@@ -8,6 +8,8 @@ export interface PhoneShort {
     id: number
     phone_number: string
     notes: string | null
+    is_personal: boolean,
+    created_by: number,
     feedbacks: FeedbackShort[]
     global_code: string
 }

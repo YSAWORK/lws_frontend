@@ -5,17 +5,20 @@
 <script setup lang="ts">
   withDefaults(defineProps<{
     size?: 'sm' | 'md' | 'lg' | '100' | '50' | '25' | 'auto'
-    justify?: 'left' | 'center' | 'right'
-    flex?: 'row' | 'column'
-    row_width?: string
+    paddingStyle?: string // 0 0 0 1vw
+    row_width?: string    // ширина поля вводу
+    gap?: string          // відстань між написом та полем вводу
+    grid?: string         // приклад: "200px 1fr" або "12rem minmax(0, 1fr)"
+    placeholder?: string
     disabled?: boolean
-    modelValue: string
+    modelValue: string | null | undefined
     type?: HTMLInputElement["type"]
   }>(), {
     size: '50',
-    justify: 'left',
-    flex: 'row',
+    paddingStyle: '0 0 0 1vw',
     row_width: '10vw',
+    grid: undefined,
+    placeholder: '',
     disabled: false,
     type: 'text',
   })
@@ -25,13 +28,14 @@
 
 <template>
   <label
-        :class="[
-          `flex-${flex}`,
-          `justify-${justify}`,]">
+        :style="{
+            padding: paddingStyle,
+            gap: gap,
+            ...(grid ? { display: 'grid', gridTemplateColumns: grid, alignItems: 'start' } : {}),
+  }">
     <span
           style="font-size: var(--input-font-size)"
-          :style="[`width:${row_width}`,
-    ]">
+          :style="{ width: row_width }">
       <slot />
     </span>
     <input
@@ -41,7 +45,8 @@
           `size-${size}`,
           `type-${type}`,
           ]"
-        :value="modelValue"
+        :placeholder="placeholder"
+        :value="modelValue ?? ''"
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
         :disabled="disabled">
   </label>
@@ -50,6 +55,9 @@
 <style scoped>
   /* === BASE INPUT === */
   .base_input {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
     height: var(--input-min-height);
     font-size: var(--input-font-size);
     text-align: left;
@@ -60,6 +68,7 @@
     box-shadow: var(--shadow-light);
     border: 1px solid var(--border);
     margin: var(--margin-base);
+    background-color: transparent;
   }
 
   .base_input:focus {
@@ -76,35 +85,22 @@
   }
 
   input::placeholder {
-    color: var(--border);
+    color: var(--text-disabled);
+    opacity: 0.4;
   }
 
   /* === SIZE === */
   .size-sm {width: clamp(50px, 2vw, 100px);}
-  .size-md {width: clamp(100px, 20vw, 400px);}
-  .size-lg {width: clamp(400px, 40vw, 80000px);}
+  .size-md {width: clamp(50px, 20vw, 400px);}
+  .size-lg {width: clamp(100px, 40vw, 80000px);}
   .size-100 {width: 100%;}
   .size-50 {width: 50%;}
   .size-25 {width: 25%;}
   .size-auto {width: auto;}
 
-  /* === TYPE === */
-  .type-primary {
-  }
-  .type-error {
-    background-color: var(--bg_error);
-  }
-  .type-success {
-    background-color: var(--bg_success);
-  }
-
   /* === JUSTIFY === */
   .justify-left {align-items: flex-start;}
   .justify-center {align-items: center;}
   .justify-right {align-items: flex-end;}
-
-  /* === FLEX DIRECTION === */
-  .flex-row {flex-direction: row; gap: 0.5vw;}
-  .flex-column {flex-direction: column; gap: 0;}
 
 </style>

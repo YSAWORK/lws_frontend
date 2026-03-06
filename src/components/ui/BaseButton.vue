@@ -3,7 +3,7 @@
 
 <script setup lang="ts">
   withDefaults(defineProps<{
-    variant?: 'light' | 'white'
+    variant?: 'light' | 'white' | 'warning'
     size?: 'sm' | 'md' | 'lg' | 'icon' | "full"
     border?: 'none' | 'small' | 'large'
     disabled?: boolean
@@ -80,14 +80,13 @@
   }
 
   /* === white === */
-  .variant-white {
-    background-color: rgb(var(--bg_header-rgb)) !important;
-    color: rgb(var(--text-button-rgb));
+  .variant-warning {
+    background-color: var(--button-primary);
+    color: var(--text-button);
   }
 
-  .variant-white:active {
-    background-color: var(--button-primary-hover) !important;
-    color: var(--bg_header) !important;
+  .variant-warning:hover {
+    background-color: var(--danger-primary);
   }
 
   /* === SIZE === */

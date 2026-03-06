@@ -3,13 +3,13 @@
 
 <script setup lang="ts">
   const props = defineProps<{
-    checked: boolean
+    modelValue: boolean
     disabled?: boolean
     label: string
   }>()
 
   const emit = defineEmits<{
-    (e: "change", value: boolean): void
+    (e: "update:modelValue", value: boolean): void
   }>()
 </script>
 
@@ -17,12 +17,12 @@
   <label class="base-checkbox">
     <input
         type="checkbox"
-        :checked="props.checked"
-        :disabled="props.disabled"
-        @change="emit('change', ($event.target as HTMLInputElement).checked)"
+        :checked="modelValue"
+        :disabled="disabled"
+        @change="emit('update:modelValue', ($event.target as HTMLInputElement).checked)"
     />
     <span class="base-checkbox-box"></span>
-    <span class="base-checkbox-label"> {{ label }} </span>
+    <span class="base-checkbox-label">{{ label }}</span>
     <slot />
   </label>
 </template>

@@ -2,101 +2,272 @@
 
 <script setup lang="ts">
 // ===== IMPORT TOOLS ===== //
-// import general
-import { onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia'
+  // import general
+    import api from "@/api"
+    import { onMounted, computed} from 'vue'
+    import { storeToRefs } from 'pinia'
 
-// import features
-import { formatDate } from "@/lib/formatDate";
-import { openPDF } from "@/lib/openPDF";
-import { openLink } from "@/lib/openLink";
-import { sendEmail } from "@/lib/sendEmail";
-import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
-import { useResourceFileUpload } from "@/lib/uploadFile"
+  // import features
+    import { formatDate } from "@/lib/formatDate";
+    import { openPDF } from "@/lib/openPDF";
+    import { openLink } from "@/lib/openLink";
+    import { sendEmail } from "@/lib/sendEmail";
+    import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
+    import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
+    import { formatAddress } from "@/lib/formatAddress";
+    import {filterComponentByOwner} from "@/lib/filterByOwner";
 
 // import base elements
-import Base from "@/components/templates/base.vue";
-import ContentContainer from "@/components/ui/ContentContainer.vue";
-import BaseImage from "@/components/ui/BaseImage.vue";
-import BaseLine from "@/components/ui/BaseLine.vue";
-import BaseButton from "@/components/ui/BaseButton.vue";
-import BaseCollapse from "@/components/ui/BaseCollapse.vue";
+    import Base from "@/components/templates/base.vue";
+    import ContentContainer from "@/components/ui/ContentContainer.vue";
+    import BaseImage from "@/components/ui/BaseImage.vue";
+    import BaseLine from "@/components/ui/BaseLine.vue";
+    import BaseButton from "@/components/ui/BaseButton.vue";
+    import BaseCollapse from "@/components/ui/BaseCollapse.vue";
 
-// import images
-import OpenFile from "@/assets/img/open_file.svg";
-import UNBALink from "@/assets/img/UNBA_Logo.png"
-import DownloadFile from "@/assets/img/download.svg";
-import DefaultAvatar from "@/assets/img/default_avatar.jpg"
-import EmailImg from '@/assets/img/email.svg'
-import PhoneImg from '@/assets/img/phone.png'
-import AddressImg from '@/assets/img/address.png'
-import EditImg from '@/assets/img/edit.png'
-import LicenseImg from '@/assets/img/certificate.png'
-import FeedbackImg from '@/assets/img/feedback.svg'
-import DeleteImg from '@/assets/img/delete.svg'
+  // import images
+    import OpenFile from "@/assets/img/open_file.svg";
+    import UNBALink from "@/assets/img/UNBA_Logo.png"
+    import DownloadFile from "@/assets/img/download.svg";
+    import DefaultAvatar from "@/assets/img/default_avatar.jpg"
+    import EmailImg from '@/assets/img/email.svg'
+    import PhoneImg from '@/assets/img/phone.png'
+    import AddressImg from '@/assets/img/address.png'
+    import EditImg from '@/assets/img/edit.png'
+    import LicenseImg from '@/assets/img/certificate.png'
+    import FeedbackImg from '@/assets/img/feedback.svg'
+    import DeleteImg from '@/assets/img/delete.svg'
+    import NewImg from '@/assets/img/new.svg'
+    import PrivateImg from '@/assets/img/private.svg'
+    import PrivateNoImg from '@/assets/img/privateNo.svg'
 
-// import stores
-import { useMeFullGetStore } from '@/stores/useMeProfile'
-import BaseTableList from "@/components/ui/BaseTableList.vue";
+  // import stores
+    import { useMeFullGetStore } from '@/stores/useMeProfile'
+    import BaseTableList from "@/components/ui/BaseTableList.vue";
 
-// import modals
-import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
-import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
-import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
-import { openFeedbacksModal } from "@/components/modals/openFeedback/openFeedbackTs";
-import { openAttorneyUrlModal } from "@/components/modals/editAttorneyUrl/editAttorneyUrlTs"
-import { openEditTextAreaModal } from "@/components/modals/editTextArea/editTextAreaTs"
-import { openEditLicenseModal } from "@/components/modals/openEditLicenseModal/openEditLicenseModalTs"
-import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
-import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
-import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"
-import type { AddressShort } from "@/model_schemas/models/components/address.model"
-import type { AddressShortDTO } from "@/model_schemas/dto/components/address.dto"
-import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
+  // import modals
+    import { openEditNotesModal } from "@/components/modals/global/editNotes/editNotesTs"
+    import { openFeedbacksModal } from "@/components/modals/global/open&addFeedback/open&addFeedbackTs";
+    import { openAttorneyUrlModal } from "@/components/modals/employee/editAttorneyUrl/editAttorneyUrlTs"
+    import { openEditTextAreaModal } from "@/components/modals/global/editTextArea/editTextAreaTs"
+    import { openEditLicenseModal } from "@/components/modals/employee/openEditLicenseModal/openEditLicenseModalTs"
+    import { openCreateEmailModal } from "@/components/modals/components/createEmail/openCreateEmail"
+    import { openCreatePhoneModal } from "@/components/modals/components/createPhone/openCreatePhone"
+    import { openCreateAddressModal } from "@/components/modals/components/createAddress/openCreateAddress"
+    import { openConfirmDeleteModal } from "@/components/modals/global/confirmDelete/confirmDeleteTs";
+    import { openConfirmPrivacyModal } from "@/components/modals/global/confirmPrivacy/confirmPrivacyTs"
+    import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
+    import type { EmployeeFullGet } from "@/model_schemas/models/person/employee.model";
 
 
 // load API
-const store = useMeFullGetStore()
-const { employee } = storeToRefs(store)
+    const store = useMeFullGetStore()
+    const { employee } = storeToRefs(store)
 
-// ФУНКЦІЇ
-  // edit email notes
-  function handleEditEmailNotes(email: EmailShortDTO) {
-    openEditEmailNotesModal(email,  (updated: EmailShortDTO) => {
-      if (!employee.value?.emails) return
-      employee.value.emails = employee.value.emails.map(e =>
-          e.id === updated.id ? updated : e
+/// ФУНКЦІЇ
+
+  // Отримати видимі компоненти
+    /// Телефони
+      const visiblePhones = computed(() =>
+          filterComponentByOwner(employee.value?.phones ?? [], employee.value?.Id)
       )
-    })
-  }
 
-  // edit phone notes
-  function handleEditPhoneNotes(email: PhoneShortDTO) {
-    openEditPhoneNotesModal(email,  (updated: PhoneShortDTO) => {
-      if (!employee.value?.phones) return
-      employee.value.phones = employee.value.phones.map(e =>
-          e.id === updated.id ? updated : e
+    /// Електронна пошта
+      const visibleEmails = computed(() =>
+          filterComponentByOwner(employee.value?.emails ?? [], employee.value?.Id)
       )
-    })
-  }
 
-  // edit address notes
-  function handleEditAddressNotes(address: AddressShort) {
-    const dto = {
-      ...address,
-      notes: address.notes ?? null,
-    } as unknown as AddressShortDTO
-    openEditAddressNotesModal(dto, (updatedDto) => {
-      if (!employee.value?.addresses) return
-      const updatedModel = mapAddressShort(updatedDto)
-      employee.value.addresses = employee.value.addresses.map(a =>
-          a.id === updatedModel.id ? updatedModel : a
+    /// Адреси
+      const visibleAddresses = computed(() =>
+          filterComponentByOwner(employee.value?.addresses ?? [], employee.value?.Id)
       )
-    })
-  }
+
+  // Створення нового Email
+    function handleEmailCreate(ownerId: number) {
+      openCreateEmailModal({
+        owner: { key: "Person", id: ownerId },
+        onCreated: async () => {
+          await store.fetchMeFullGet()
+        },
+      })
+    }
+
+  // Створення нового номеру телефону
+    function handlePhoneCreate(ownerId: number) {
+      openCreatePhoneModal({
+        owner: { key: "Person", id: ownerId },
+        onCreated: async () => {
+          await store.fetchMeFullGet()
+        },
+      })
+    }
+
+  // Створення нової адвреси
+    function handleAddressCreate(ownerId: number) {
+      openCreateAddressModal({
+        owner: { key: "Person", id: ownerId },
+        onCreated: async () => {
+          await store.fetchMeFullGet()
+        },
+      })
+    }
+
+  // Видалення компонентів (email, телефон, адреса)
+    type IdModelDel = { id: number | string;}
+
+    // Формуємо реєстр змінних
+      const ComponentDeleteRegistry = {
+        emails: {
+          url: (id: IdModelDel['id']) => `/components/email/${id}/`,
+          title: "Видалити інформацію про email:",
+          display: (e: any) => e.email ?? "",},
+        phones: {
+          url: (id: IdModelDel['id']) => `/components/phone/${id}/`,
+          title: "Видалити інформацію про номер телефону:",
+          display: (p: any) => formatPhoneNumber(p.phone_number) ?? "",},
+        addresses: {
+          url: (id: IdModelDel['id']) => `/components/address/${id}/`,
+          title: "Видалити інформацію про адресу:",
+          display: (p: any) => formatAddress(p) ?? "",}
+        } as const
+        export type ComponentDeleteKey = keyof typeof ComponentDeleteRegistry
+
+      // Функція-декоратор, що перевіряє наявність батьківської моделі
+        function deleteComponent(key: ComponentDeleteKey, model: IdModelDel) {
+          if (!employee.value) return
+          handledeleteComponent(key, model, employee.value)
+        }
+
+      // Хендлер виклику модалки
+      function handledeleteComponent<K extends ComponentDeleteKey>(
+          key: K,
+          model: IdModelDel,
+          parent: Record<string, any>,
+      ) {
+        const cfg = ComponentDeleteRegistry[key]
+        // Виклик модалки
+        openConfirmDeleteModal({
+          item: model,
+          url: cfg.url(model.id),
+          title: cfg.title,
+          displayValue: cfg.display?.(model),
+          onSaved: async () => {
+            await store.fetchMeFullGet()
+          },
+        })
+      }
 
 
-  // edit AttorneyUrl
+  // Редагування Нотаток
+    type IdModel = { id: number | string; notes?: string | null; is_personal?: boolean | false }
+
+    // Формуємо реєстр змінних
+      const NotesRegistry = {
+        emails: {
+          url: (id: IdModel["id"]) => `/components/email/${id}/`,
+          title: "Нотатки до email:",
+          display: (e: any) => e.email ?? "",},
+        phones: {
+          url: (id: IdModel["id"]) => `/components/phone/${id}/`,
+          title: "Нотатки до номеру телефону:",
+          display: (p: any) => formatPhoneNumber(p.phone_number) ?? "",},
+        addresses: {
+          url: (id: IdModel["id"]) => `/components/address/${id}/`,
+          title: "Нотатки до адреси:",
+          display: (p: any) => formatAddress(p) ?? "",}
+        } as const
+      export type NotesKey = keyof typeof NotesRegistry
+
+      // Функція-декоратор, що перевіряє наявність батьківської моделі
+      function editNotes(key: NotesKey, model: IdModel) {
+        if (!employee.value) return
+        handleEditNotes(key, model, employee.value)
+        }
+
+      // Хендлер виклику модалки
+        function handleEditNotes<K extends NotesKey>(
+            key: K,
+            model: IdModel,
+            parent: Record<string, any>,
+        ) {
+          const cfg = NotesRegistry[key]
+      // Виклик модалки
+          openEditNotesModal({
+            item: model,
+            url: cfg.url(model.id),
+            title: cfg.title,
+            displayValue: cfg.display?.(model),
+      // Оновлення DOM
+            onSaved: (updated) => {
+              const list = parent[key]
+              if (!Array.isArray(list)) return
+              parent[key] = list.map((x: any) =>
+                  x.id === updated.id ? {...x, notes: updated.notes ?? null} : x
+              )
+            },
+          })
+        }
+
+  // Зміна статусу персонального компонента
+      type IdModelToggle = {
+        id: number | string
+        is_personal: boolean
+      }
+
+      type ToggleRegistryModel = IdModelToggle & Record<string, any>
+
+      const ComponentPersonalRegistry = {
+        emails: {
+          url: (id: IdModelToggle["id"]) => `/components/email/${id}/`,
+          title: "Змінити приватність email:",
+          display: (e: any) => e.email ?? "",
+        },
+        phones: {
+          url: (id: IdModelToggle["id"]) => `/components/phone/${id}/`,
+          title: "Змінити приватність номера телефону:",
+          display: (p: any) => formatPhoneNumber(p.phone_number) ?? "",
+        },
+        addresses: {
+          url: (id: IdModelToggle["id"]) => `/components/address/${id}/`,
+          title: "Змінити приватність адреси:",
+          display: (a: any) => formatAddress(a) ?? "",
+        },
+      } as const
+
+      export type ComponentPersonalKey = keyof typeof ComponentPersonalRegistry
+
+      function toggleComponentPersonal(
+          key: ComponentPersonalKey,
+          model: IdModelToggle,
+      ) {
+        if (!employee.value) return
+        handleToggleComponentPersonal(key, model)
+      }
+
+      function handleToggleComponentPersonal<K extends ComponentPersonalKey>(
+          key: K,
+          model: ToggleRegistryModel,
+      ) {
+        const cfg = ComponentPersonalRegistry[key]
+
+        openConfirmPrivacyModal({
+          item: model,
+          url: cfg.url(model.id),
+          isPersonalNow: model.is_personal,
+          title: cfg.title,
+          displayValue: cfg.display?.(model),
+          onSaved: async () => {
+            model.is_personal = !model.is_personal
+            await store.fetchMeFullGet()
+          },
+          onError: (err) => {
+            console.error(`Помилка зміни приватності (${String(key)}):`, err)
+          },
+        })
+      }
+
+
+  // Редагування URL в ЄРАУ
   function handleEditAttorneyUrl(employeeId: number, currentUrl: string | null) {
     openAttorneyUrlModal({
       employeeId,
@@ -109,7 +280,7 @@ const { employee } = storeToRefs(store)
     })
   }
 
-  // open feedback modal
+  // Глобальні коментарі
   type FeedbackOwner = { feedbacks?: FeedbackShortDTO[] | null }
   function handleOpenFeedbacks(
       entity: FeedbackOwner,
@@ -133,87 +304,89 @@ const { employee } = storeToRefs(store)
     )
   }
 
-  // edit file
-  const employeeUploader = useResourceFileUpload((id) => `person/employees/${id}/`)
-  const isUploading = employeeUploader.isUploading
-  const UploadError = employeeUploader.error
-  const uploadEmployeeFile = employeeUploader.upload
-  const FileInput = ref<HTMLInputElement | null>(null)
+  // Редагувати документи адвоката (Свідоцтво/Посвідчення)
+    // Тип даних, що передаються модалці
+      type DocPayload = {
+        Number: string | null
+        Date: string | null
+        Commission: string | null
+        File: string | null
+      }
+    // Регістр даних, що передаються модалці з ключами
+      const DocsRegistry = {
+        license: {
+          title: "Свідоцтво про право на зайняття адвокатською діяльністю",
+          current: (e: EmployeeFullGet): DocPayload => ({
+            Number: e.LicenseNumber,
+            Date: e.LicenseDate,
+            Commission: e.LicenseCommission,
+            File: e.LicenseFile,
+          }),
+          fieldMap: {
+            number: "series_number_license",
+            date: "date_issued_license",
+            commission: "issuing_organization_license",
+            file: "attorney_license_file",
+          },
+        },
+        certificate: {
+          title: "Посвідчення адвоката",
+          current: (e: EmployeeFullGet): DocPayload => ({
+            Number: e.CertificateNumber,
+            Date: e.CertificateDate,
+            Commission: e.CertificateCommission,
+            File: e.CertificateFile,
+          }),
+          fieldMap: {
+            number: "series_number_certificate",
+            date: "date_issued_certificate",
+            commission: "issuing_organization_certificate",
+            file: "attorney_certificate_file",
+          },
+        },
+      } as const
+      export type DocKey = keyof typeof DocsRegistry
 
-  function triggerPickFile() {
-    UploadError.value = null
-    FileInput.value?.click()
-  }
+    // Функція-декоратор, що перевіряє наявність батьківської моделі
+      function editDoc(key: DocKey) {
+        if (!employee.value) return
+        handleEditDoc(key, employee.value)
+      }
 
-  async function onPickFile(e: Event, field: string) {
-    const input = e.target as HTMLInputElement
-    const file = input.files?.[0] ?? null
-    input.value = ""
+    // Хендлер виклику модалки
+      function handleEditDoc<K extends DocKey>(key: K, e: EmployeeFullGet) {
+        const cfg = DocsRegistry[key]
 
-    if (!file) return
-    if (file.type !== "application/pdf") {
-      UploadError.value = "Потрібен саме PDF-файл."
-      return
+    // Виклик модалки
+      openEditLicenseModal({
+        employeeId: e.Id,
+        title: cfg.title,
+        current: cfg.current(e),
+        fieldMap: cfg.fieldMap,
+
+    // Оновлення DOM
+        onSaved: async () => {
+          await store.fetchMeFullGet()
+        },
+      })
     }
-    const maxMb = 15
-    const mb = file.size / 1024 / 1024
-    if (mb > maxMb) {
-      UploadError.value = `Файл завеликий (${mb.toFixed(1)}MB). Максимум: ${maxMb}MB.`
-      return
+
+  // Редагувати Біографію
+    function handleEditBiography(id: number) {
+      openEditTextAreaModal({
+        title: "Біографія працівника",
+        id,
+        patchUrl: `/person/employees/${id}/`,
+        initialValue: employee.value?.Biography ?? "",
+        fieldName: "info",
+        onSaved: (newValue) => {
+          if (employee.value) employee.value.Biography = newValue
+        },
+      })
     }
-    const employeeId = employee.value?.Id
-    if (!employeeId) {
-      UploadError.value = "Не знайдено employeeId."
-      return
-    }
-    await uploadEmployeeFile(employeeId, field, file)
-    await store.fetchMeFullGet()
-  }
 
-  // Редагування Свідоцтва про право на зайняття адвокатською діяльністю
-  function handleEditLicense() {
-    if (!employee.value) return
-
-    openEditLicenseModal({
-      employeeId: employee.value.Id,
-      title: "Свідоцтво про право на зайняття адвокатською діяльністю",
-
-      current: {
-        Number: employee.value.LicenseNumber,
-        Date: employee.value.LicenseDate,
-        Commission: employee.value.LicenseCommission,
-        File: employee.value.LicenseFile,
-      },
-
-      fieldMap: {
-        number: "series_number_license",
-        date: "date_issued_license",
-        commission: "issuing_organization_license",
-        file: "attorney_license_file",
-      },
-
-      onSaved: async () => {
-        await store.fetchMeFullGet()
-      },
-    })
-  }
-
-  // РЕдагувати Біографію
-  function handleEditBiography(id: number) {
-    openEditTextAreaModal({
-      title: "Біографія працівника",
-      id,
-      patchUrl: `/person/employees/${id}/`,
-      initialValue: employee.value?.Biography ?? "",
-      fieldName: "info",
-      onSaved: (newValue) => {
-        if (employee.value) employee.value.Biography = newValue
-      },
-    })
-  }
-
-// ЗБІР MOUNT
-onMounted(() => store.fetchMeFullGet())
+  // ЗБІР MOUNT
+  onMounted(() => store.fetchMeFullGet())
 </script>
 
 <template>
@@ -315,33 +488,59 @@ onMounted(() => store.fetchMeFullGet())
                 title="Електронна пошта"
                 name="Контейнер з електронною поштою"
                 marginStyle="bottom_1vw">
-              <BaseTableList v-if="employee?.emails
-                                  ? employee?.emails.length > 0
+              <template #actions>
+                <BaseButton
+                    size="sm"
+                    :title="employee?.Id
+                      ? `Прив'язати нову електронну пошту`
+                      : `Неможливо визначити ID користувача`"
+                    :disabled="!employee?.Id"
+                    @click="handleEmailCreate(employee!.Id)">
+                  <BaseImage size="icon" :src="NewImg"></BaseImage>
+                </BaseButton>
+              </template>
+
+              <BaseTableList v-if="visibleEmails
+                                  ? visibleEmails.length > 0
                                   : false">>
                 <template #colgroup>
-                  <col style="width:5%">
+                  <col style="width:7%">
                   <col style="width:25%">
-                  <col style="width:55%">
+                  <col style="width:53%">
                   <col style="width:10%">
                 </template>
                 <template #tbody_rows>
-                  <tr v-for="email in employee?.emails">
+                  <tr v-for="email in visibleEmails">
                     <td style="padding-left: 1vw">
-                      <BaseImage
-                          :src="EmailImg"
-                          size="sm-icon"
-                          alt="Іконка електронної пошти">
-                      </BaseImage>
+                      <ContentContainer padding="none" flex="row" no-background="true">
+                        <BaseImage
+                            :src="EmailImg"
+                            size="sm-icon"
+                            alt="Електронна адреса співробітника">
+                        </BaseImage>
+                        <BaseImage
+                            size="sm-icon"
+                            :title="email.is_personal
+                              ? 'Інші не бачать цю електронну адресу'
+                              : 'Цю електронну адресу бачать інші'"
+                            @click="toggleComponentPersonal('emails', email)"
+                            :src="email.is_personal ? PrivateImg : PrivateNoImg">
+                        </BaseImage>
+                      </ContentContainer>
                     </td>
                     <td
                         class="important_text"
                         title="Адреса електронної пошти">
                       {{ email.email }}
                     </td>
-                    <td
-                        class="notes_string"
-                        :title="'Нотатки до електронної пошти '+email.email">
-                      {{ email.notes }}
+                    <td class="collapse_string">
+                      <ContentContainer
+                          padding="none"
+                          no-background="true"
+                          v-if="email.notes"
+                          :title="email.notes">
+                        {{ email.notes }}
+                      </ContentContainer>
                     </td>
                     <td>
                       <ContentContainer
@@ -382,16 +581,16 @@ onMounted(() => store.fetchMeFullGet())
                           </ContentContainer>
                         </BaseButton>
                         <BaseButton
-                            name="Кнопка відправки електронного листа"
+                            name="Кнопка видалення email"
                             size="sm"
-                            @click="sendEmail(email.email)"
-                            :title="'Надіслати електронного листа на ' + email.email">
+                            @click="deleteComponent('emails', email)"
+                            :title="'Видалити ' + email.email">
                           <BaseImage :src="DeleteImg" size="icon"/>
                         </BaseButton>
                         <BaseButton
                             name="Кнопка редагування нотаток"
                             size="sm"
-                            @click="handleEditEmailNotes(email)"
+                            @click="editNotes('emails', email)"
                             :title="`Редагувати нотатки до ` + email.email">
                           <BaseImage :src="EditImg" size="icon"/>
                         </BaseButton>
@@ -412,72 +611,100 @@ onMounted(() => store.fetchMeFullGet())
             <BaseCollapse
                 title="Телефон"
                 marginStyle="bottom_1vw">
-              <BaseTableList v-if="employee?.phones
-                                  ? employee?.phones.length > 0
+              <template #actions>
+                <BaseButton
+                    size="sm"
+                    :title="employee?.Id
+                      ? `Прив'язати новий контактний номер телефону`
+                      : `Неможливо визначити ID користувача`"
+                    :disabled="!employee?.Id"
+                    @click="handlePhoneCreate(employee!.Id)">
+                  <BaseImage size="icon" :src="NewImg"></BaseImage>
+                </BaseButton>
+              </template>
+              <BaseTableList v-if="visiblePhones
+                                  ? visiblePhones.length > 0
                                   : false">>
                 <template #colgroup>
-                  <col style="width:5%">
+                  <col style="width:7%">
                   <col style="width:25%">
-                  <col style="width:55%">
+                  <col style="width:53%">
                   <col style="width:10%">
                 </template>
                 <template #tbody_rows>
-                  <tr v-for="phone in employee?.phones">
-                    <td style="padding-left: 1vw">
-                      <BaseImage
-                          :src="PhoneImg"
-                          size="sm-icon"
-                          alt="Перейти до профілю співробітника">
-                      </BaseImage>
-                    </td>
-                    <td
-                        title="Контактний номер телефону"
-                        class="important_text">
-                      {{ phone.phone_number }}
-                    </td>
-                    <td
-                        :title="'Нотатки до номеру телефону '+ phone.phone_number"
-                        class="notes_string">
-                      {{ phone.notes }}
-                    </td>
-                    <td>
-                      <ContentContainer
-                          padding="none"
-                          flex="row"
-                          no-background="true"
-                          justifyContent="end">
-                        <BaseButton
-                            size="sm"
-                            name="Кнопка перегляду глобальних коментарів"
-                            :title="'Переглянути глобальні коментарі до ' + phone.phone_number"
-                            alt="Кнопка глобальних коментарів"
-                            @click="handleOpenFeedbacks(phone, {
-                                title: phone.phone_number,
+                  <tr v-for="phone in visiblePhones">
+                      <td style="padding-left: 1vw">
+                        <ContentContainer padding="none" flex="row" no-background="true">
+                          <BaseImage
+                              :src="PhoneImg"
+                              size="sm-icon"
+                              alt="Телефонний номер співробітника">
+                          </BaseImage>
+                          <BaseImage
+                              size="sm-icon"
+                              :title="phone.is_personal
+                                ? 'Інші не бачать цей номер телефону'
+                                : 'Цей номер телефону бачать інші'"
+                              @click="toggleComponentPersonal('phones', phone)"
+                              :src="phone.is_personal ? PrivateImg : PrivateNoImg">
+                          </BaseImage>
+                        </ContentContainer>
+                      </td>
+                      <td
+                          title="Контактний номер телефону"
+                          class="important_text">
+                        {{ formatPhoneNumber(phone.phone_number) }}
+                      </td>
+                      <td
+                          :title="'Нотатки до номеру телефону '+ formatPhoneNumber(phone.phone_number)"
+                          class="notes_string">
+                        {{ phone.notes }}
+                      </td>
+                      <td>
+                        <ContentContainer
+                            padding="none"
+                            flex="row"
+                            no-background="true"
+                            justifyContent="end">
+                          <BaseButton
+                              size="sm"
+                              name="Кнопка перегляду глобальних коментарів"
+                              :title="'Переглянути глобальні коментарі до ' + formatPhoneNumber(phone.phone_number)"
+                              alt="Кнопка глобальних коментарів"
+                              @click="handleOpenFeedbacks(phone, {
+                                title: formatPhoneNumber(phone.phone_number),
                                 employeeCode: employee?.global_code,
                                 elementCode: phone.global_code,
                               })">
-                          <ContentContainer no-background="true" padding="none" divStyle="icon_wrapper">
-                            <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
-                            <ContentContainer
-                                name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
-                                :title="`Кількість глобальних коментарів для ` + phone.phone_number"
-                                padding="none"
-                                class="counter_badge"
-                                divStyle="counter_badge"
-                                v-if="phone.feedbacks?.length > 0">
-                              {{ phone.feedbacks.length > 99 ? "99+" : phone.feedbacks.length }}
+                            <ContentContainer no-background="true" padding="none" divStyle="icon_wrapper">
+                              <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
+                              <ContentContainer
+                                  name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
+                                  :title="`Кількість глобальних коментарів для ` + formatPhoneNumber(phone.phone_number)"
+                                  padding="none"
+                                  class="counter_badge"
+                                  divStyle="counter_badge"
+                                  v-if="phone.feedbacks?.length > 0">
+                                {{ phone.feedbacks.length > 99 ? "99+" : phone.feedbacks.length }}
+                              </ContentContainer>
                             </ContentContainer>
-                          </ContentContainer>
-                        </BaseButton>
-                        <BaseButton
-                            size="sm"
-                            name="Кнопка редагування нотаток"
-                            :title="`Редагувати нотатки до ` + phone.phone_number"
-                            @click="handleEditPhoneNotes(phone)">
-                          <BaseImage  :src="EditImg" size="icon"/>
-                        </BaseButton>
-                      </ContentContainer>
-                    </td>
+                          </BaseButton>
+                          <BaseButton
+                              name="Кнопка видалення номеру телефону"
+                              size="sm"
+                              @click="deleteComponent('phones', phone)"
+                              :title="'Видалити ' + formatPhoneNumber(phone.phone_number)">
+                            <BaseImage :src="DeleteImg" size="icon"/>
+                          </BaseButton>
+                          <BaseButton
+                              size="sm"
+                              name="Кнопка редагування нотаток"
+                              :title="`Редагувати нотатки до ` + formatPhoneNumber(phone.phone_number)"
+                              @click="editNotes('phones', phone)">
+                            <BaseImage  :src="EditImg" size="icon"/>
+                          </BaseButton>
+                        </ContentContainer>
+                      </td>
                   </tr>
                 </template>
               </BaseTableList>
@@ -495,37 +722,59 @@ onMounted(() => store.fetchMeFullGet())
                 title="Адреса"
                 name="Контейнер з адресою"
                 marginStyle="bottom_1vw">
+              <template #actions>
+                <BaseButton
+                    size="sm"
+                    :title="employee?.Id
+                      ? `Прив'язати нову адресу`
+                      : `Неможливо визначити ID користувача`"
+                    :disabled="!employee?.Id"
+                    @click="handleAddressCreate(employee!.Id)">
+                  <BaseImage size="icon" :src="NewImg"></BaseImage>
+                </BaseButton>
+              </template>
+
               <BaseTableList
-                  v-if="employee?.addresses
-                                  ? employee?.addresses.length > 0
+                  v-if="visibleAddresses
+                                  ? visibleAddresses.length > 0
                                   : false">
                 <template #colgroup>
-                  <col style="width:5%">
-                  <col style="width:55%">
+                  <col style="width:7%">
+                  <col style="width:53%">
                   <col style="width:30%">
                   <col style="width:10%">
                 </template>
                 <template #tbody_rows>
-                  <tr v-for="address in employee?.addresses">
+                  <tr v-for="address in visibleAddresses">
                     <td style="padding-left: 1vw">
-                      <BaseImage
-                          :src="AddressImg"
-                          size="sm-icon"
-                          alt="Перейти до профілю співробітника">
-                      </BaseImage>
+                      <ContentContainer padding="none" flex="row" no-background="true">
+                        <BaseImage
+                            :src="PhoneImg"
+                            size="sm-icon"
+                            alt="Aдреса співробітника">
+                        </BaseImage>
+                        <BaseImage
+                            size="sm-icon"
+                            :title="address.is_personal
+                              ? 'Інші не бачать цю адресу'
+                              : 'Цю адресу бачать інші'"
+                            @click="toggleComponentPersonal('addresses', address)"
+                            :src="address.is_personal ? PrivateImg : PrivateNoImg">
+                        </BaseImage>
+                      </ContentContainer>
                     </td>
                     <td
                         title="Адреса"
                         class="important_text"> {{
-                        address?.address
-                            ? address.address
+                        formatAddress(address)
+                            ? formatAddress(address)
                             : "Помилка відображення адреси" }}
                     </td>
                     <td
-                        :title="`Нотатки до адреси: ` + address.address"
+                        :title="`Нотатки до адреси: ` + formatAddress(address)"
                         class="notes_string"> {{
                         address?.notes
-                            ? address.notes
+                            ? address?.notes
                             : "" }}
                     </td>
                     <td>
@@ -537,17 +786,17 @@ onMounted(() => store.fetchMeFullGet())
                         <BaseButton
                             size="sm"
                             name="Кнопка відкриття адреси на мапі"
-                            @click="openInGoogleMaps(address.address)"
-                            :title="`Показати на мапі адресу: ` + address.address">
+                            @click="openInGoogleMaps(formatAddress(address))"
+                            :title="`Показати на мапі адресу: ` + formatAddress(address)">
                           <BaseImage  :src="AddressImg" size="icon"/>
                         </BaseButton>
                         <BaseButton
                             size="sm"
                             name="Кнопка перегляду глобальних коментарів"
-                            :title="'Переглянути глобальні коментарі до ' + address.address"
+                            :title="'Переглянути глобальні коментарі до ' + formatAddress(address)"
                             alt="Кнопка глобальних коментарів"
                             @click="handleOpenFeedbacks(address, {
-                                title: address.address,
+                                title: formatAddress(address),
                                 employeeCode: employee?.global_code,
                                 elementCode: address.global_code,
                               })">
@@ -555,7 +804,7 @@ onMounted(() => store.fetchMeFullGet())
                             <BaseImage :src="FeedbackImg" size="icon"></BaseImage>
                             <ContentContainer
                                 name="Контейнер ярлику лічильника коментарів на кнопці перегляду глобальних коментарів"
-                                :title="`Кількість глобальних коментарів для ` + address.address"
+                                :title="`Кількість глобальних коментарів для ` + formatAddress(address)"
                                 padding="none"
                                 class="counter_badge"
                                 divStyle="counter_badge"
@@ -565,10 +814,17 @@ onMounted(() => store.fetchMeFullGet())
                           </ContentContainer>
                         </BaseButton>
                         <BaseButton
+                            name="Кнопка видалення адреси"
                             size="sm"
-                            @click="handleEditAddressNotes(address)"
+                            @click="deleteComponent('addresses', address)"
+                            :title="'Видалити ' + formatAddress(address)">
+                          <BaseImage :src="DeleteImg" size="icon"/>
+                        </BaseButton>
+                        <BaseButton
+                            size="sm"
+                            @click="editNotes('addresses', address)"
                             name="Кнопка редагування нотаток"
-                            :title="`Редагувати нотатки до ` + address.address">
+                            :title="`Редагувати нотатки до ` + formatAddress(address)">
                           <BaseImage  :src="EditImg" size="icon"/>
                         </BaseButton>
                       </ContentContainer>
@@ -696,7 +952,7 @@ onMounted(() => store.fetchMeFullGet())
                               title="Редагувати дані Свідоцтва"
                               styleType="secondary"
                               size="sm"
-                              @click="handleEditLicense"
+                              @click="editDoc('license')"
                           >
                             <BaseImage :src="EditImg" size="icon" />
                           </BaseButton>
@@ -758,22 +1014,14 @@ onMounted(() => store.fetchMeFullGet())
                             <BaseImage  :src="DownloadFile" size="icon"/>
                           </BaseButton>
                           <BaseButton
-                              name="Кнопка вибору нового файлу посвідчення адвоката"
-                              title="Обрати новий файл посвідчення адвоката (PDF)"
+                              name="Кнопка редагування даних свідоцтва"
+                              title="Редагувати дані Свідоцтва"
+                              styleType="secondary"
                               size="sm"
-                              @click="triggerPickFile"
-                              :disabled="isUploading"
+                              @click="editDoc('certificate')"
                           >
                             <BaseImage :src="EditImg" size="icon" />
                           </BaseButton>
-                          <input
-                              name="Технічний елемент для вибору файлу посвідчення адвоката"
-                              ref="FileInput"
-                              type="file"
-                              accept="application/pdf"
-                              style="display:none"
-                              @change="onPickFile($event,'attorney_certificate_file')"
-                          />
                         </ContentContainer>
                       </td>
                     </tr>

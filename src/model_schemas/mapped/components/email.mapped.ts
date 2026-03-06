@@ -11,6 +11,8 @@ export function mapEmailShort (dto: EmailShortDTO): EmailShort {
         id: dto.id,
         email: dto.email,
         notes: dto.notes,
+        is_personal: dto.is_personal,
+        created_by: dto.created_by,
         feedbacks: dto.feedbacks.map(mapFeedbackShort),
         global_code: dto.global_code
     }

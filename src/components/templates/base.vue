@@ -25,9 +25,9 @@
       </div>
     </div>
     <div class="header_block">
-      <button type="button" :disabled="loading" @click="onLogout">
-        {{ loading ? 'Вихід…' : 'Logout' }}
-      </button>
+      <BaseButton type="button" :disabled="loading" @click="onLogout">
+        {{ loading ? 'Вихід…' : 'Log out' }}
+      </BaseButton>
     </div>
   </div>
 
@@ -43,8 +43,7 @@
   </div>
 
   <div id="footer" class="header_row">
-    <div>
-      FOOTER
+    <div style="font-size: 30px; font-weight: bold">
     </div>
   </div>
 </template>

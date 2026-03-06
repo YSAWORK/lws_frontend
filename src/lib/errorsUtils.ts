@@ -3,6 +3,7 @@
 
 // ===== IMPORTS ===== //
 import type { AxiosError } from "axios";
+import { ZodError } from "zod"
 
 
 // ===== TYPES & EXPORTS ===== //
@@ -15,6 +16,15 @@ export type NormalizedErrors = {
 
 // ===== NORMALIZE API ERROR ===== //
 export function normalizeApiError(err: unknown): NormalizedErrors {
+    // ✅ Zod
+    if (err instanceof ZodError) {
+        const out: NormalizedErrors = { nonField: [], fields: {}, status: 0 }
+        for (const i of err.issues) {
+            const key = String(i.path[0] ?? "nonField")
+            ;(out.fields[key] ??= []).push(i.message)
+        }
+        return out
+    }
     const res = (err as AxiosError)?.response;
     const data = res?.data as any;
 

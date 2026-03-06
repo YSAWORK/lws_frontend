@@ -71,6 +71,7 @@
           gap="1">
         <BaseButton
             size="lg"
+            variant="warning"
             title="Підтвердити зміни"
             :disabled="disableConfirm"
             @click="onConfirm">
@@ -100,6 +101,11 @@
     text-align: center;
     opacity: 0.9;
     margin-bottom: 1vw;
+    white-space: pre-line;
+  }
+
+  .chapter_title{
+    white-space: pre-line;
   }
 
 </style>

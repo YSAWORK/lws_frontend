@@ -39,16 +39,16 @@
     import BaseTableList from "@/components/ui/BaseTableList.vue";
 
     // import modals
-    import { openEditEmailNotesModal } from "@/components/modals/editEmailNotes/editEmailNotesTs"
-    import { openEditPhoneNotesModal } from "@/components/modals/editPhoneNotes/editPhoneNotes"
-    import { openEditAddressNotesModal } from "@/components/modals/editAddressNotes/script"
-    import { openFeedbacksModal } from "@/components/modals/openFeedback/openFeedbackTs";
+    import { openEditNotesModal } from "@/components/modals/global/editNotes/editNotesTs"
+    import { openFeedbacksModal } from "@/components/modals/global/open&addFeedback/open&addFeedbackTs";
     import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
     import type { EmailShortDTO } from "@/model_schemas/dto/components/email.dto"
     import type { PhoneShortDTO } from "@/model_schemas/dto/components/phone.dto"
     import type { AddressShort } from "@/model_schemas/models/components/address.model"
     import type { AddressShortDTO } from "@/model_schemas/dto/components/address.dto"
     import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
+  import {formatPhoneNumber} from "@/lib/formatPhoneNumber";
+  import {formatAddress} from "@/lib/formatAddress";
 
     // load API
     const store = useEmployeeFullGetStore()
@@ -58,42 +58,58 @@
     const route = useRoute()
 
   // ФУНКЦІЇ
-    // edit email notes
-    function handleEditEmailNotes(email: EmailShortDTO) {
-    openEditEmailNotesModal(email,  (updated: EmailShortDTO) => {
-      if (!employee.value?.emails) return
-      employee.value.emails = employee.value.emails.map(e =>
-          e.id === updated.id ? updated : e
-        )
-      })
-    }
+    // Редагування Нотаток
+      type IdModel = { id: number | string; notes?: string | null }
 
-    // edit phone notes
-    function handleEditPhoneNotes(email: PhoneShortDTO) {
-    openEditPhoneNotesModal(email,  (updated: PhoneShortDTO) => {
-      if (!employee.value?.phones) return
-      employee.value.phones = employee.value.phones.map(e =>
-          e.id === updated.id ? updated : e
-        )
-      })
-    }
+      // Формуємо реєстр змінних
+      const NotesRegistry = {
+        emails: {
+          url: (id: IdModel["id"]) => `/components/email/${id}/`,
+          title: "Нотатки до email:",
+          display: (e: any) => e.email ?? "",},
+        phones: {
+          url: (id: IdModel["id"]) => `/components/phone/${id}/`,
+          title: "Нотатки до номеру телефону:",
+          display: (p: any) => formatPhoneNumber(p.phone_number) ?? "",},
+        addresses: {
+          url: (id: IdModel["id"]) => `/components/address/${id}/`,
+          title: "Нотатки до адреси:",
+          display: (p: any) => formatAddress(p) ?? "",}
+      } as const
+      export type NotesKey = keyof typeof NotesRegistry
 
-    // edit address notes
-    function handleEditAddressNotes(address: AddressShort) {
-    const dto = {
-      ...address,
-      notes: address.notes ?? null,
-    } as unknown as AddressShortDTO
-    openEditAddressNotesModal(dto, (updatedDto) => {
-      if (!employee.value?.addresses) return
-      const updatedModel = mapAddressShort(updatedDto)
-      employee.value.addresses = employee.value.addresses.map(a =>
-          a.id === updatedModel.id ? updatedModel : a
-        )
-      })
-    }
+      // Функція-декоратор, що перевіряє наявність батьківської моделі
+      function editNotes(key: NotesKey, model: IdModel) {
+        if (!employee.value) return
+        handleEditNotes(key, model, employee.value)
+      }
 
-    // open feedback modal
+      // Хендлер виклику модалки
+      function handleEditNotes<K extends NotesKey>(
+          key: K,
+          model: IdModel,
+          parent: Record<string, any>,
+      ) {
+        const cfg = NotesRegistry[key]
+        // Виклик модалки
+        openEditNotesModal({
+          item: model,
+          url: cfg.url(model.id),
+          title: cfg.title,
+          displayValue: cfg.display?.(model),
+          // Оновлення DOM
+          onSaved: (updated) => {
+            const list = parent[key]
+            if (!Array.isArray(list)) return
+            parent[key] = list.map((x: any) =>
+                x.id === updated.id ? {...x, notes: updated.notes ?? null} : x
+            )
+          },
+        })
+      }
+
+
+  // open feedback modal
     type FeedbackOwner = { feedbacks?: FeedbackShortDTO[] | null }
     function handleOpenFeedbacks(
         entity: FeedbackOwner,
@@ -299,7 +315,7 @@
                           <BaseButton
                               name="Кнопка редагування нотаток"
                               size="sm"
-                              @click="handleEditEmailNotes(email)"
+                              @click="editNotes('emails', email)"
                               :title="`Редагувати нотатки до ` + email.email">
                             <BaseImage :src="EditImg" size="icon"/>
                           </BaseButton>
@@ -381,7 +397,7 @@
                               size="sm"
                               name="Кнопка редагування нотаток"
                               :title="`Редагувати нотатки до ` + phone.phone_number"
-                              @click="handleEditPhoneNotes(phone)">
+                              @click="editNotes('phones', phone)">
                             <BaseImage  :src="EditImg" size="icon"/>
                           </BaseButton>
                         </ContentContainer>
@@ -474,7 +490,7 @@
                           </BaseButton>
                           <BaseButton
                               size="sm"
-                              @click="handleEditAddressNotes(address)"
+                              @click="editNotes('addresses', address)"
                               name="Кнопка редагування нотаток"
                               :title="`Редагувати нотатки до ` + address.address">
                             <BaseImage  :src="EditImg" size="icon"/>
