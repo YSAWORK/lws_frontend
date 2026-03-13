@@ -32,6 +32,7 @@ export function BaseView(idFromProp?: string | number) {
     function localCleanupAndRedirect(msg?: string) {
         localStorage.removeItem('access')
         localStorage.removeItem('refresh')
+        localStorage.removeItem('employee_id')
         if (msg) error.value = msg
         const back = route.fullPath !== '/login' ? route.fullPath : undefined
         router.push({ name: 'Login', query: back ? { redirect: back } : undefined })
@@ -46,7 +47,7 @@ export function BaseView(idFromProp?: string | number) {
             return
         }
         try {
-            await api.post('/api/auth/logout/', { refresh })
+            await api.post('/auth/logout/', { refresh })
             localCleanupAndRedirect()
         } catch (e: any) {
             localCleanupAndRedirect(e?.response?.data?.detail || 'Сесію завершено')
@@ -54,8 +55,6 @@ export function BaseView(idFromProp?: string | number) {
             loading.value = false
         }
     }
-
-    onMounted(() => fetchProfile())
 
     return {
         // state

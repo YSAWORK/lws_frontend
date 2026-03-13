@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
   withDefaults(defineProps<{
+    styleModel?: "table_search"
     size?: 'sm' | 'md' | 'lg' | '100' | '50' | '25' | 'auto'
     paddingStyle?: string // 0 0 0 1vw
     row_width?: string    // ширина поля вводу
@@ -44,6 +45,7 @@
         :class="[
           `size-${size}`,
           `type-${type}`,
+          `styleModel-${styleModel}`,
           ]"
         :placeholder="placeholder"
         :value="modelValue ?? ''"
@@ -89,6 +91,11 @@
     opacity: 0.4;
   }
 
+  label span {
+    text-transform: none !important;
+    white-space: pre;
+  }
+
   /* === SIZE === */
   .size-sm {width: clamp(50px, 2vw, 100px);}
   .size-md {width: clamp(50px, 20vw, 400px);}
@@ -102,5 +109,12 @@
   .justify-left {align-items: flex-start;}
   .justify-center {align-items: center;}
   .justify-right {align-items: flex-end;}
+
+  .styleModel-table_search {
+    height: 2vw;
+    background-color: var(--bg);
+    padding: 0 0.5vw 0 0.5vw;
+    margin: 0;
+  }
 
 </style>

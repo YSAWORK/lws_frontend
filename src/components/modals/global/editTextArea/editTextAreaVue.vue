@@ -19,6 +19,7 @@
       patchUrl: string
       fieldName: string
       currentValue: string
+      maxlength?: number
     }>()
 
     const emit = defineEmits<{
@@ -89,6 +90,7 @@
         <BaseTextArea
             v-model="draft"
             name="textarea"
+            :maxlength="props.maxlength ?? 1000"
             placeholder="Введи текст..."
             :disabled="isSubmitting"
             :rows="8"

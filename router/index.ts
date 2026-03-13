@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import authRoutes from './auth'
 import teamRoutes from "./team";
 import componentRoutes from "./components";
+import personRoutes from "./person";
 
 
 const baseRoutes: RouteRecordRaw[] = [
@@ -18,6 +19,7 @@ const routes: RouteRecordRaw[] = [
     ...authRoutes,
     ...teamRoutes,
     ...componentRoutes,
+    ...personRoutes,
 ]
 
 const router = createRouter({

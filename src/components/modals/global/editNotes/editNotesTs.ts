@@ -5,12 +5,13 @@ import { createApp, h } from "vue"
 import EditNotesVue from "@/components/modals/global/editNotes/editNotesVue.vue"
 
 // FUNCTIONS
-export type NotesModel = { id: number | string; notes?: string | null }
+export type NotesModel = { id: number | string; notes?: string | null}
 export type EditNotesModalOptions<T extends NotesModel> = {
     item: T
     url: string
     title?: string
     displayValue?: string
+    maxlength: number
     onSaved: (updated: NotesModel) => void
 }
 export function openEditNotesModal<T extends NotesModel>(
@@ -33,6 +34,7 @@ export function openEditNotesModal<T extends NotesModel>(
                 item: opts.item,
                 url: opts.url,
                 title: opts.title,
+                maxlength: opts.maxlength,
                 displayValue: opts.displayValue,
                 onSaved: (updated: NotesModel) => {
                     opts.onSaved(updated)

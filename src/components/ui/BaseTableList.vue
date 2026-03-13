@@ -70,6 +70,10 @@
     font-size: var(--btn-font-size-lg);
   }
 
+  .style-light thead tr {
+    background-color: RGB(var(--button-primary-rgb), 0.6);
+  }
+
   .style-yellow {
     background-color: var(--bg_header);
     box-shadow: var(--shadow-dark);

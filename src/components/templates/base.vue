@@ -1,16 +1,15 @@
 <!-- .src/components/templates/base.vue -->
 
 <script setup lang="ts">
-  import { ref} from "vue";
   import { BaseView } from "./base";
   import BaseButton from "@/components/ui/BaseButton.vue";
+  import ContentContainer from "@/components/ui/ContentContainer.vue";
   const { loading, onLogout } = BaseView();
 </script>
 
 <template>
   <div id="header">
     <div class="header_block" id="logo_block">
-
     </div>
     <div class="header_block">
       <div id="page_title">
@@ -30,7 +29,13 @@
       </BaseButton>
     </div>
   </div>
-
+  <ContentContainer
+      id = "navigation"
+      padding="none"
+      no-background="true"
+      >
+    <slot name="navigation"></slot>
+  </ContentContainer>
   <div id = 'main_div'>
     <div id = 'main_column_left'>
       <slot name="main_column_left"></slot>

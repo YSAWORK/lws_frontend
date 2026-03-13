@@ -135,6 +135,13 @@ body {
     white-space: break-spaces;
 }
 
+.prime_text_string {
+    text-align: justify;
+    font-size: var(--btn-font-size-lmd);
+    color: var(--text-primary);
+    white-space: break-spaces;
+}
+
 .text_no_data {
     color: var(--text-disabled);
     font-size: var(--font-size-note);
@@ -223,4 +230,12 @@ body {
         opacity:.8;
         margin:0;
         padding:0;
+    }
+
+    .hidden_text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: justify;
     }

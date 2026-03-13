@@ -21,6 +21,7 @@
       item: NotesModel
       url: string
       title?: string
+      maxlength: number
       displayValue?: string
     }>()
 
@@ -90,7 +91,9 @@
         </ContentContainer>
 
 <!-- ПОЛЕ ВВОДУ -->
-        <BaseTextArea v-model="localNotes"></BaseTextArea>
+        <BaseTextArea
+            v-model="localNotes" :maxlength="maxlength">
+        </BaseTextArea>
 
 <!-- КНОПКИ -->
         <ContentContainer

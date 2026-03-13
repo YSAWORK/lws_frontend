@@ -5,15 +5,17 @@ type OwnerItem = {
     created_by?: number
 }
 
-
-// FILTER COMPONENTS
 export function filterComponentByOwner<T extends OwnerItem>(
     items: T[] | undefined,
-    ownerId?: number
+    ownerId?: number,
 ): T[] {
     if (!items) return []
 
-    return items.filter(
-        item => !item.is_personal || item.created_by === ownerId
-    )
+    console.log("ownerId:", ownerId, typeof ownerId)
+    console.log("items:", items)
+
+    return items.filter(item => {
+        console.log("created_by:", item.created_by, typeof item.created_by, "is_personal:", item.is_personal)
+        return !item.is_personal || item.created_by === ownerId
+    })
 }

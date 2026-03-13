@@ -3,7 +3,7 @@
 
 <script setup lang="ts">
   withDefaults(defineProps<{
-    variant?: 'light' | 'white' | 'warning'
+    variant?: 'light' | 'tab' | 'warning'
     size?: 'sm' | 'md' | 'lg' | 'icon' | "full"
     border?: 'none' | 'small' | 'large'
     disabled?: boolean
@@ -78,6 +78,28 @@
     color: var(--text-disabled);
     font-weight: normal;
   }
+
+  .variant-tab {
+    clip-path: polygon(
+        10px 0,
+        calc(100% - 10px) 0,
+        100% 100%,
+        0 100%
+    );
+    background-color: var(--border);
+  }
+
+  .variant-tab:hover{
+    background-color: var(--text-disabled);
+  }
+
+  .variant-tab:focus{
+    background-color: var(--button-primary);
+  }
+
+
+
+
 
   /* === white === */
   .variant-warning {

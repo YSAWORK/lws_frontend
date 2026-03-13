@@ -11,7 +11,7 @@ defineProps<{
   alignItems?: 'center' | 'start' | 'end'
   justifyContent?: 'center' | 'start' | 'end' | 'between'
   columns?: string
-  divStyle? : 'icon_wrapper' | 'counter_badge'
+  divStyle? : 'icon_wrapper' | 'counter_badge' | 'tab_counter_badge'
   maxHeight?: string
   overflow?: 'auto' | 'hidden' | 'scroll'
 }>()
@@ -112,7 +112,6 @@ defineProps<{
 
   .divStyle-icon_wrapper {
     position: relative;
-    display: inline-block;
   }
 
   .divStyle-counter_badge {
@@ -129,6 +128,23 @@ defineProps<{
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--counter-radius);
+  }
+
+  .divStyle-tab_counter_badge {
+    position: absolute;
+    top:-8px;
+    right:4px;
+    width: 1vw;
+    min-width: 15px;
+    height: 1vw;
+    min-height: 15px;
+    background: var(--button-primary);
+    color: var(--font-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--button-primary-hover);
     border-radius: var(--counter-radius);
   }
 
