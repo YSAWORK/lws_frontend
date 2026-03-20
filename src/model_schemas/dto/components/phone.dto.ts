@@ -4,6 +4,7 @@
     import { z } from "zod"
     import {FeedbackShortSchema} from "@/model_schemas/dto/feedback/feedback.dto";
     import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
+import {EmailCreateSchema} from "@/model_schemas/dto/components/email.dto";
 
 // PHONE SHORT
     export const PhoneShortSchema = z.object({
@@ -24,6 +25,13 @@
         is_personal: z.boolean(),
         notes: z.string().nullable().optional(),
         owner: OwnerSchema
-    })
+    }).transform((data) => ({
+        phone_number: data.phone_number,
+        is_personal: data.is_personal,
+        notes: data.notes,
+        owner_id: data.owner.id,
+        owner_key: data.owner.key,
+    }))
 
-    export type PhoneCreateDTO = z.infer<typeof PhoneCreateSchema>
+    export type PhoneCreateFormDTO = z.input<typeof PhoneCreateSchema>
+    export type PhoneCreateDTO = z.output<typeof PhoneCreateSchema>

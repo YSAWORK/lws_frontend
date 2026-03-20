@@ -8,7 +8,7 @@
 
   // import features
     import { formatDate } from "@/lib/formatDate";
-    import { openPDF } from "@/lib/openPDF";
+    import { openLoadFile } from "@/lib/files/openLoadFile";
     import { openLink } from "@/lib/openLink";
     import { sendEmail } from "@/lib/sendEmail";
     import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
@@ -1008,7 +1008,7 @@
                                 name="Кнопка відкриття файлу Свідоцтва"
                                 size="sm"
                                 :disabled="!employee?.LicenseFile"
-                                @click="employee?.LicenseFile && openPDF(employee.LicenseFile)"
+                                @click="employee?.LicenseFile && openLoadFile(employee.LicenseFile)"
                                 :title="employee?.LicenseFile ? `Відкрити PDF-файл Свідоцтва` : 'PDF-файл Свідоцтва відсутній'">
                               <BaseImage  :src="OpenFile" size="icon"/>
                             </BaseButton>
@@ -1016,7 +1016,7 @@
                                 name="Кнопка завантаження файлу Свідоцтва"
                                 size="sm"
                                 :disabled="!employee?.LicenseFile"
-                                @click="employee?.LicenseFile && openPDF(employee?.LicenseFile,true)"
+                                @click="employee?.LicenseFile && openLoadFile(employee?.LicenseFile,{download: true})"
                                 :title="employee?.LicenseFile ? `Завантажити PDF-файл Свідоцтва` : 'PDF-файл Свідоцтва відсутній'">
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>
@@ -1074,7 +1074,7 @@
                                 name="Кнопка відкриття файлу посвідчення"
                                 size="sm"
                                 :disabled="!employee?.CertificateFile"
-                                @click="employee?.CertificateFile && openPDF(employee?.CertificateFile)"
+                                @click="employee?.CertificateFile && openLoadFile(employee?.CertificateFile)"
                                 :title="employee?.CertificateFile ? 'Відкрити PDF-файл Посвідчення' : 'PDF-файл Посвідчення відсутній'">
                               <BaseImage  :src="OpenFile" size="icon"/>
                             </BaseButton>
@@ -1082,7 +1082,7 @@
                                 name="Кнопка завантаження файлу посвідчення"
                                 size="sm"
                                 :disabled="!employee?.CertificateFile"
-                                @click="employee?.CertificateFile && openPDF(employee?.CertificateFile,true)"
+                                @click="employee?.CertificateFile && openLoadFile(employee?.CertificateFile,{download: true})"
                                 :title="employee?.CertificateFile ? `Завантажити PDF-файл Посвідчення` : 'PDF-файл Посвідчення відсутній'">
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>

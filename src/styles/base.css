@@ -202,6 +202,7 @@ body {
 }
 
 .modal_box {
+    max-height: 90vh;
     width: 50%;
     padding: 0.5vw;
     background: var(--bg_header);
@@ -238,4 +239,20 @@ body {
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-align: justify;
+    }
+
+    .preview_file_documents {
+        width: 100%;
+        max-width: 50vw;
+        height: auto;
+        min-height: 40vh;
+        max-height: 50vh;
+        object-fit: contain;
+    }
+
+    .no_data_label {
+        font-size: clamp(30px, 10vw, 60px);
+        text-align: center;
+        color: var(--text-disabled);
+        opacity: 0.5;
     }

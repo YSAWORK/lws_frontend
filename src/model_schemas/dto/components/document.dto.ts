@@ -26,15 +26,47 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
 
 
     /// SHORT SCHEMA
-        export const DocumentShortSchema = z.object({
-            id: z.number(),
+        export const DocumentCreateSchema = z.object({
             name: z.string(),
-            extension: z.string(),
+            extension: z.string().nullable(),
             date: z.string().nullable(),
-            size: z.number(),
+            file: z.file().nullable(),
             notes: z.string().nullable(),
             is_personal: z.boolean(),
-            created_by: z.number().nullable(),
+            owner: OwnerSchema,
         })
 
-        export type DocumentShortDTO = z.infer<typeof DocumentShortSchema>
+        export type DocumentCreateDTO = z.infer<typeof DocumentCreateSchema>
+
+
+    /// PATCH SCHEMA
+        export const DocumentUpdateSchema = z.object({
+            id: z.string(),
+            name: z.string(),
+            extension: z.string().nullable(),
+            mime: z.string(),
+            date: z.string().nullable(),
+            size: z.number(),
+            file: z.instanceof(File).nullable(),
+            notes: z.string().nullable(),
+            is_personal: z.boolean(),
+            existing_file_url: z.string().nullable(),
+        })
+
+        export type DocumentUpdateDTO = z.infer<typeof DocumentUpdateSchema>
+
+    /// MAP FOR UPDATE
+        export function mapDocumentToEditDTO(document: DocumentDTO): DocumentUpdateDTO {
+            return {
+                id: String(document.id),
+                name: document.name,
+                extension: document.extension ?? null,
+                mime: document.mime,
+                date: document.date ? document.date.toISOString().slice(0, 10) : null,
+                file: null,
+                size: document.size,
+                notes: document.notes,
+                is_personal: document.is_personal,
+                existing_file_url: document.file ?? null,
+            }
+        }

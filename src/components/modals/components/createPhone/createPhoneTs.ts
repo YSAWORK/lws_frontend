@@ -4,9 +4,8 @@
 import { ref } from "vue"
 import api from "@/api"
 import { normalizeApiError, type NormalizedErrors } from "@/lib/errorsUtils"
-import { PhoneCreateSchema, type PhoneCreateDTO, } from "@/model_schemas/dto/components/phone.dto"
+import { PhoneCreateSchema, type PhoneCreateFormDTO, } from "@/model_schemas/dto/components/phone.dto"
 import type { OwnerDTO } from "@/model_schemas/dto/person/owner.dto"
-
 
 export function useCreatePhoneModal(
     owner: OwnerDTO,
@@ -18,7 +17,7 @@ export function useCreatePhoneModal(
     const isSubmitting = ref(false)
     const errors = ref<NormalizedErrors>({nonField: [], fields: {}})
 
-    const form = ref<PhoneCreateDTO>({
+    const form = ref<PhoneCreateFormDTO>({
         phone_number: "",
         is_personal: false,
         notes: null,

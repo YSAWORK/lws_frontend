@@ -4,7 +4,8 @@
 defineProps<{
   size?: 'fit-content' | '50' | 'full'
   flex?: 'column' | 'row'
-  padding?: 'none' | 'string' | 'bottom' | 'bottom-left' | 'left' | 'top'
+  padding?: 'none' | 'string' | 'bottom' | 'bottom-left' | 'left' | 'top' | 'right-left'
+  paddingStyle?: string // 0 0 0 1vw
   gap?: '1' | '2' | '5'
   grid?: string
   noBackground?: 'true'
@@ -14,6 +15,7 @@ defineProps<{
   divStyle? : 'icon_wrapper' | 'counter_badge' | 'tab_counter_badge'
   maxHeight?: string
   overflow?: 'auto' | 'hidden' | 'scroll'
+  height?: string
 }>()
 
 </script>
@@ -32,6 +34,8 @@ defineProps<{
           `divStyle-${divStyle}`,
       ]"
       :style="{
+        padding: paddingStyle,
+        ...(height ? { height } : {}),
         ...(columns ? { display: 'grid', gridTemplateColumns: columns } : {}),
         ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {}),
         ...(grid ? { display: 'grid', gridTemplateColumns: grid, alignItems: 'start' } : {}),
@@ -73,6 +77,10 @@ defineProps<{
 
   .padding-top {
     padding: 1vw 0 0 0;
+  }
+
+  .padding-right-left {
+    padding: 0 1vw;
   }
 
   .flex-row {

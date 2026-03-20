@@ -4,9 +4,8 @@
 import { ref } from "vue"
 import api from "@/api"
 import { normalizeApiError, type NormalizedErrors } from "@/lib/errorsUtils"
-import { EmailCreateSchema, type EmailCreateDTO, } from "@/model_schemas/dto/components/email.dto"
+import { EmailCreateSchema, type EmailCreateFormDTO } from "@/model_schemas/dto/components/email.dto"
 import type { OwnerDTO } from "@/model_schemas/dto/person/owner.dto"
-
 
 export function useCreateEmailModal(
     owner: OwnerDTO,
@@ -16,9 +15,9 @@ export function useCreateEmailModal(
     },
 ) {
     const isSubmitting = ref(false)
-    const errors = ref<NormalizedErrors>({nonField: [], fields: {}})
+    const errors = ref<NormalizedErrors>({ nonField: [], fields: {} })
 
-    const form = ref<EmailCreateDTO>({
+    const form = ref<EmailCreateFormDTO>({
         email: "",
         is_personal: false,
         notes: null,
@@ -27,11 +26,11 @@ export function useCreateEmailModal(
 
     async function submit() {
         try {
-            errors.value = {nonField: [], fields: {}}
+            errors.value = { nonField: [], fields: {} }
             isSubmitting.value = true
 
-            const payload = EmailCreateSchema.parse(form.value) // може кинути ZodError
-            await api.post("/components/emails/create/", payload) // може кинути AxiosError
+            const payload = EmailCreateSchema.parse(form.value)
+            await api.post("/components/emails/create/", payload)
 
             emit("created")
             emit("close")
@@ -42,5 +41,5 @@ export function useCreateEmailModal(
         }
     }
 
-    return {form, submit, isSubmitting, errors}
+    return { form, submit, isSubmitting, errors }
 }

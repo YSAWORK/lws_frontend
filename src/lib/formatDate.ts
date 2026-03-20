@@ -1,16 +1,23 @@
 // src/lib/formatDate.ts
 // FORMAT DATE FUNCTION to "DD.MM.YYYY"
 
-export function formatDate(dateString: string | Date | null | undefined): string {
-    if (!dateString) return "";
+export function formatDate(
+    dateValue: string | number | Date | null | undefined
+): string {
+    if (dateValue === null || dateValue === undefined || dateValue === "") {
+        return ""
+    }
 
-    const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+    const date =
+        typeof dateValue === "string" || typeof dateValue === "number"
+            ? new Date(dateValue)
+            : dateValue
 
-    if (isNaN(date.getTime())) return "";
+    if (isNaN(date.getTime())) return ""
 
     return date.toLocaleDateString("uk-UA", {
-        day: "numeric",
-        month: "numeric",
+        day: "2-digit",
+        month: "2-digit",
         year: "numeric",
-    });
+    })
 }

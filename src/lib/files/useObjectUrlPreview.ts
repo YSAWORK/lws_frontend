@@ -1,4 +1,4 @@
-/// .src/lib/useObjectUrlPreview.ts
+/// .src/lib/files/useObjectUrlPreview.ts
 
 
 /// IMPORT TOOLS

@@ -151,6 +151,7 @@ watch(
             title="Введіть бажане значення, щоб застосувати фільтр"
             styleModel="table_search"
             paddingStyle="0"
+            :placeholder="searchPlaceholder"
             :model-value="localSearch"
             @update:model-value="(value) => {
             localSearch = value

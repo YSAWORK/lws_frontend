@@ -6,6 +6,6 @@ import { z } from "zod"
 /// OWNER
     export const OwnerSchema = z.object({
         id: z.number(),
-        key: z.enum(["Person",]),
+        key: z.enum(["app_person.Person",]),
     })
     export type OwnerDTO = z.infer<typeof OwnerSchema>

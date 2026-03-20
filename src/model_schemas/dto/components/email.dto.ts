@@ -24,7 +24,14 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
         email: z.string(),
         notes: z.string().nullable().optional(),
         is_personal: z.boolean(),
-        owner: OwnerSchema
-    })
+        owner: OwnerSchema,
+    }).transform((data) => ({
+        email: data.email,
+        is_personal: data.is_personal,
+        notes: data.notes,
+        owner_id: data.owner.id,
+        owner_key: data.owner.key,
+    }))
 
-    export type EmailCreateDTO = z.infer<typeof EmailCreateSchema>
+export type EmailCreateFormDTO = z.input<typeof EmailCreateSchema>
+export type EmailCreateDTO = z.output<typeof EmailCreateSchema>

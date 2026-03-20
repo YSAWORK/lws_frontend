@@ -5,7 +5,7 @@ import { ref } from "vue"
 import api from "@/api"
 import axios from "axios"
 import { normalizeApiError, type NormalizedErrors } from "@/lib/errorsUtils"
-import { AddressCreateSchema, type AddressCreateDTO, } from "@/model_schemas/dto/components/address.dto"
+import { AddressCreateSchema, type AddressCreateFormDTO, } from "@/model_schemas/dto/components/address.dto"
 import type { OwnerDTO } from "@/model_schemas/dto/person/owner.dto"
 
 
@@ -19,7 +19,7 @@ export function useCreateAddressModal(
     const isSubmitting = ref(false)
     const errors = ref<NormalizedErrors>({nonField: [], fields: {}})
 
-    const form = ref<AddressCreateDTO>({
+    const form = ref<AddressCreateFormDTO>({
         postal_code: "",
         country: "",
         region: "",

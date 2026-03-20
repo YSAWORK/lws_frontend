@@ -44,7 +44,7 @@ watch(() => props.modelValue, () => autoResize())
 </script>
 
 <template>
-  <label class="input-text-label"
+  <label class="important_text"
          :style="{
             padding: paddingStyle,
             gap: gap,

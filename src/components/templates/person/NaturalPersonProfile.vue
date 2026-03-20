@@ -9,15 +9,16 @@
 
   // import features
     import { formatDate } from "@/lib/formatDate";
-    import { openPDF } from "@/lib/openPDF";
-    import { openLink } from "@/lib/openLink";
+    import { openLoadFile } from "@/lib/files/openLoadFile";
     import { sendEmail } from "@/lib/sendEmail";
     import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
     import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
     import { formatAddress } from "@/lib/formatAddress";
-    import {filterComponentByOwner} from "@/lib/filterByOwner";
-    import {getFileIcon} from "@/lib/getFileIcon";
+    import { filterComponentByOwner } from "@/lib/filterByOwner";
+    import { getFileIcon } from "@/lib/files/getFileMeta";
     import { useTableQuery } from "@/lib/useTableQuery"
+    import { extractExtension, getFileGroup, isPreviewable} from "@/lib/files/getFileMeta"
+
 
 // import base elements
     import Base from "@/components/templates/base.vue";
@@ -56,12 +57,14 @@
     import { openCreateEmailModal } from "@/components/modals/components/createEmail/openCreateEmail"
     import { openCreatePhoneModal } from "@/components/modals/components/createPhone/openCreatePhone"
     import { openCreateAddressModal } from "@/components/modals/components/createAddress/openCreateAddress"
+    import { openCreateDocumentModal } from "@/components/modals/components/createDocument/openCreateDocument"
     import { openConfirmDeleteModal } from "@/components/modals/global/confirmDelete/confirmDeleteTs";
     import { openConfirmPrivacyModal } from "@/components/modals/global/confirmPrivacy/confirmPrivacyTs"
+    import { openEditDocumentModal } from "@/components/modals/components/editDocument/openEditDocument"
 
 // import types
-  import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
-  import type { DocumentDTO } from "@/model_schemas/dto/components/document.dto.ts";
+    import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
+    import {DocumentDTO, mapDocumentToEditDTO, } from "@/model_schemas/dto/components/document.dto";
 
   // РОУТЕРИ
     const route = useRoute()
@@ -133,9 +136,9 @@
   )
 
   // Створення нового Email
-    function handleEmailCreate(ownerId: number) {
+    function handleEmailCreate() {
       openCreateEmailModal({
-        owner: { key: "Person", id: ownerId },
+        owner: { key: "app_person.Person", id: NaturalPerson.value?.Id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(id)
         },
@@ -143,23 +146,50 @@
     }
 
   // Створення нового номеру телефону
-    function handlePhoneCreate(ownerId: number) {
+    function handlePhoneCreate() {
       openCreatePhoneModal({
-        owner: { key: "Person", id: ownerId },
+        owner: { key: "app_person.Person", id: NaturalPerson.value?.Id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(id)
         },
       })
     }
 
-  // Створення нової адвреси
-    function handleAddressCreate(ownerId: number) {
+  // Створення нової адреси
+    function handleAddressCreate() {
       openCreateAddressModal({
-        owner: { key: "Person", id: ownerId },
+        owner: { key: "app_person.Person", id: NaturalPerson.value?.Id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(id)
         },
       })
+    }
+
+  // Створення нового файлу
+  function handleDocumentCreate() {
+    openCreateDocumentModal({
+      owner: { key: "app_person.Person", id: NaturalPerson.value?.Id },
+      onCreated: async () => {
+        await store.fetchNaturalPersonFullGet(id)
+      },
+    })
+  }
+
+
+  // Редагувати файл
+  function handleDocumentEdit(document: DocumentDTO) {
+    openEditDocumentModal({
+      document: mapDocumentToEditDTO(document),
+      onCreated: async () => {
+        await store.fetchNaturalPersonFullGet(id)
+      },
+    })
+  }
+
+  // Визначення можливості передперегляду файлу
+    function canPreview(document: DocumentDTO) {
+      if (!document) return false
+      return isPreviewable(document.extension)
     }
 
   // Видалення компонентів (email, телефон, адреса)
@@ -470,7 +500,7 @@ function handleEditBiography(id: number) {
                         ? `Прив'язати нову електронну пошту`
                         : `Неможливо визначити ID користувача`"
                       :disabled="!NaturalPerson?.Id"
-                      @click="handleEmailCreate(NaturalPerson!.Id)">
+                      @click="handleEmailCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
                 </template>
@@ -595,7 +625,7 @@ function handleEditBiography(id: number) {
                         ? `Прив'язати новий контактний номер телефону`
                         : `Неможливо визначити ID користувача`"
                       :disabled="!NaturalPerson?.Id"
-                      @click="handlePhoneCreate(NaturalPerson!.Id)">
+                      @click="handlePhoneCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
                 </template>
@@ -708,7 +738,7 @@ function handleEditBiography(id: number) {
                         ? `Прив'язати нову адресу`
                         : `Неможливо визначити ID користувача`"
                       :disabled="!NaturalPerson?.Id"
-                      @click="handleAddressCreate(NaturalPerson!.Id)">
+                      @click="handleAddressCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
                 </template>
@@ -844,7 +874,7 @@ function handleEditBiography(id: number) {
                         ? `Додати файл`
                         : `Неможливо визначити ID користувача`"
                             :disabled="!NaturalPerson?.Id"
-                            @click="handlePhoneCreate(NaturalPerson!.Id)">
+                            @click=" handleDocumentCreate">
                           <BaseImage size="icon" :src="NewImg"></BaseImage>
                         </BaseButton>
                       </th>
@@ -985,32 +1015,27 @@ function handleEditBiography(id: number) {
                         <!-- Кнопки -->
                         <td>
                           <ContentContainer
-                              name="Кнопки Посвідчення"
                               flex="row"
                               no-background="true"
                               padding="none">
                             <BaseButton
-                                name="Кнопка відкриття файлу посвідчення"
                                 size="sm"
-                                :disabled="!document.file"
-                                @click="document.file && openPDF(document.file)"
-                                :title="document.file ? 'Відкрити PDF-файл' : 'PDF-файл відсутній'">
+                                :disabled="!canPreview(document)"
+                                @click="document.file && openLoadFile(document.file)"
+                                :title="canPreview(document) ? 'Відкрити файл в браузері' : 'Формат файлу не підтримується браузером'">
                               <BaseImage  :src="OpenFile" size="icon"/>
                             </BaseButton>
                             <BaseButton
-                                name="Кнопка завантаження файлу посвідчення"
                                 size="sm"
                                 :disabled="!document.file"
-                                @click="document.file && openPDF(document.file,true)"
-                                :title="document.file ? `Завантажити файл` : 'Файл відсутній'">
+                                @click="document.file && openLoadFile(document.file,{ download: true })"
+                                :title="document.file ? `Завантажити файл` : 'Файл не знайдено'">
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>
                             <BaseButton
-                                name="Кнопка редагування даних свідоцтва"
-                                title="Редагувати дані Свідоцтва"
-                                styleType="secondary"
+                                title="Редагувати дані файлу"
                                 size="sm"
-                                @click="editDoc('certificate')"
+                                @click="handleDocumentEdit(document)"
                             >
                               <BaseImage :src="EditImg" size="icon" />
                             </BaseButton>
@@ -1029,8 +1054,19 @@ function handleEditBiography(id: number) {
                     </template>
                   </BaseTableList>
               </ContentContainer>
-              <ContentContainer v-else class="text_no_data" no-background="true">
-                Відсутні документи
+              <ContentContainer v-else>
+                <BaseButton
+                    size="sm"
+                    :title="NaturalPerson?.Id
+                        ? `Додати файл`
+                        : `Неможливо визначити ID користувача`"
+                    :disabled="!NaturalPerson?.Id"
+                    @click=" handleDocumentCreate">
+                  <BaseImage size="icon" :src="NewImg"></BaseImage>
+                </BaseButton>
+                <ContentContainer  class="no_data_label" no-background="true">
+                  Документи відсутні
+                </ContentContainer>
               </ContentContainer>
             </ContentContainer>
 

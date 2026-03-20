@@ -35,7 +35,7 @@
             ...(grid ? { display: 'grid', gridTemplateColumns: grid, alignItems: 'start' } : {}),
   }">
     <span
-          style="font-size: var(--input-font-size)"
+          class="important_text"
           :style="{ width: row_width }">
       <slot />
     </span>

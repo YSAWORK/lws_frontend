@@ -156,7 +156,7 @@ const vm = useCreateAddressModal(props.owner, emit)
                   grid="4vw 1fr"
                   no-background="true"
                   size="fit-content"
-                  style="font-size: var(--input-font-size)"
+                  class="important_text"
                   title="Тип та назва населеного пункту">
                 НП
               </ContentContainer>
@@ -202,9 +202,9 @@ const vm = useCreateAddressModal(props.owner, emit)
               no-background="true">
             <ContentContainer
                 padding="left"
+                class="important_text"
                 no-background="true"
-                size="fit-content"
-                style="font-size: var(--input-font-size)">
+                size="fit-content">
               Вулиця
             </ContentContainer>
             <BaseSelect
@@ -244,7 +244,7 @@ const vm = useCreateAddressModal(props.owner, emit)
                 no-background="true"
                 size="fit-content"
                 title="Тип та номер приміщення (опціонально)"
-                style="font-size: var(--input-font-size)">
+                class="important_text">
               <span class="label-block">
                   <span>Прим.</span>
                   <span class="note_block">(опціонально)</span>

@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<{
   size?: "sm" | "md" | "lg" | "icon" | "full"
   border?: "none" | "small" | "large"
   disabled?: boolean
+  title?: string
 
   // file input props
   accept?: string
@@ -68,6 +69,7 @@ function onChange(e: Event) {
       :size="size"
       :border="border"
       :disabled="isDisabled"
+      :title="title"
       @click="openPicker"
   >
     <slot>Обрати файл</slot>

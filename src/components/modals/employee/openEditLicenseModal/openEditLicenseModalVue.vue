@@ -3,9 +3,9 @@
     import { computed, ref, watch } from "vue"
 
   // import features
-    import { useObjectUrlPreview } from "@/lib/useObjectUrlPreview"
+    import { useObjectUrlPreview } from "@/lib/files/useObjectUrlPreview"
     import { checkIsPdf } from "@/lib/CheckFileExt"
-    import {getPdfInfo, formatTimestamp, getRemoteFileInfo, type RemoteFileInfo} from "@/lib/fileSettings"
+    import { getPdfInfo, formatTimestamp, getRemoteFileInfo, type RemoteFileInfo} from "@/lib/fileSettings"
 
   // import base elements
     import BaseLine from "@/components/ui/BaseLine.vue"
@@ -282,7 +282,8 @@
                 <iframe
                     v-if="previewObjectUrl && previewObjectIsPdf"
                     :src="previewObjectUrl"
-                    style="width: 100%; height: 70vh; border-radius: 6px;"
+                    class="preview_file_documents"
+                    style="height: 70vh; max-height: 100%"
                 />
 
                 <!-- Якщо файл є, але не pdf -->

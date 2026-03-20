@@ -46,6 +46,24 @@ export const AddressCreateSchema = z.object({
     notes: z.string().nullable().optional(),
     is_personal: z.boolean(),
     owner: OwnerSchema
-})
+}).transform((data) => ({
+    postal_code: data.postal_code,
+    country: data.country,
+    region: data.region,
+    district: data.district,
+    community: data.community,
+    city_type: data.city_type,
+    city: data.city,
+    street: data.street,
+    street_type: data.street_type,
+    building: data.building,
+    unit_type: data.unit_type,
+    unit_number: data.unit_number,
+    notes: data.notes,
+    is_personal: data.is_personal,
+    owner_id: data.owner.id,
+    owner_key: data.owner.key,
+}))
 
-export type AddressCreateDTO = z.infer<typeof AddressCreateSchema>
+export type AddressCreateFormDTO = z.input<typeof AddressCreateSchema>
+export type AddressCreateDTO = z.output<typeof AddressCreateSchema>
