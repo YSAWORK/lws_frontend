@@ -9,6 +9,7 @@ export interface EmailShort {
     email: string
     notes: string | null
     is_personal: boolean,
+    is_blocked: boolean,
     created_by: number,
     feedbacks: FeedbackShort[]
     global_code: string

@@ -23,6 +23,7 @@ export function useCreateDocumentModal(
         date: null,
         file: null,
         is_personal: false,
+        is_blocked: false,
         notes: null,
         owner,
     })
@@ -34,8 +35,9 @@ export function useCreateDocumentModal(
             const payload = DocumentCreateSchema.parse(form.value)
             const formData = new FormData()
             formData.append("name", payload.name)
-            formData.append("extension", payload.extension)
+            formData.append("extension", payload.extension ? payload.extension : ``)
             formData.append("is_personal", String(payload.is_personal))
+            formData.append("is_blocked", String(payload.is_blocked))
             if (payload.date) {formData.append("date", payload.date)}
             if (payload.notes) {formData.append("notes", payload.notes)}
             if (payload.file) {formData.append("file", payload.file)}

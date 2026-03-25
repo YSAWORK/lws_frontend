@@ -8,8 +8,10 @@ import BaseConfirm from "@/components/ui/BaseConfirm.vue"
 export type ConfirmPrivacyModalOpts<TItem> = {
     item: TItem
     url: string
-    isPersonalNow: boolean
+    isStatusNow: boolean
+    field?: string
     title?: string
+    message?: string
     displayValue?: string
     confirmText?: string
     cancelText?: string
@@ -28,15 +30,17 @@ export function openConfirmPrivacyModal<TItem>(
         const isSubmitting = ref(false)
         let done = false
 
-        const nextValue = !opts.isPersonalNow
-        const nextStatusText = nextValue ? "персональною" : "публічною"
+        const nextValue = !opts.isStatusNow
+        const nextStatusText = nextValue ? "True" : "False"
         const defaultTitle = opts.displayValue
             ? `${opts.title ?? "Змінити статус приватності:"}\n${opts.displayValue}`
             : opts.title ?? "Змінити статус приватності"
 
-        const defaultMessage = nextValue
-            ? "Після підтвердження цей елемент буде позначено як персональний. Його не бачитимуть інші члени команди."
-            : "Після підтвердження цей елемент буде позначено як публічний. Його бачитимуть інші члени команди."
+        const defaultMessage =
+            opts.message ??
+            (nextValue
+                ? "Після підтвердження цей елемент буде позначено як персональний. Його не бачитимуть інші члени команди."
+                : "Після підтвердження цей елемент буде позначено як публічний. Його бачитимуть інші члени команди.")
 
         const app = createApp({
             render() {
@@ -61,7 +65,7 @@ export function openConfirmPrivacyModal<TItem>(
 
                         try {
                             await api.patch(opts.url, {
-                                is_personal: nextValue,
+                                [opts.field ?? "is_personal"]: nextValue,
                             })
 
                             await opts.onSaved?.(opts.item)

@@ -4,7 +4,7 @@
 
   // import features
     import { useObjectUrlPreview } from "@/lib/files/useObjectUrlPreview"
-    import { checkIsPdf } from "@/lib/CheckFileExt"
+    import { checkIsPdf } from "@/lib/files/CheckFileExt"
     import { getPdfInfo, formatTimestamp, getRemoteFileInfo, type RemoteFileInfo} from "@/lib/fileSettings"
 
   // import base elements

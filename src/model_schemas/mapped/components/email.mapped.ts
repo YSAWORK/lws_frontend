@@ -12,8 +12,9 @@ export function mapEmailShort (dto: EmailShortDTO): EmailShort {
         email: dto.email,
         notes: dto.notes,
         is_personal: dto.is_personal,
+        is_blocked: dto.is_blocked,
         created_by: dto.created_by,
         feedbacks: dto.feedbacks.map(mapFeedbackShort),
-        global_code: dto.global_code
+        global_code: dto.global_code,
     }
 }

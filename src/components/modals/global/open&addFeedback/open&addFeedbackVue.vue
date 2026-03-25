@@ -5,7 +5,7 @@
   import { ref, computed } from "vue"
   import api from "@/api"
   import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto"
-  import { formatDate } from "@/lib/formatDate";
+  import { formatDate } from "@/lib/format_data/formatDate";
   import ContentContainer from "@/components/ui/ContentContainer.vue";
   import BaseButton from "@/components/ui/BaseButton.vue";
   import BaseLine from "@/components/ui/BaseLine.vue";

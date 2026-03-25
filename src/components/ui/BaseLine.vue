@@ -4,7 +4,7 @@
 <script setup lang="ts">
 withDefaults(defineProps<{
   width?: 'think' | 'norm' | 'bold'
-  size?: 'full' | 'half'
+  size?: 'full' | 'half' | 'auto'
 }>(), {
   width: 'norm',
   size: 'full',
@@ -35,6 +35,7 @@ withDefaults(defineProps<{
   /* === SIZE === */
   .size-full {width: 100%;}
   .size-half {width: 50%;}
+  .size-auto {width: auto;}
 
 
 </style>

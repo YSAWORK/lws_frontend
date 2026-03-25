@@ -7,13 +7,13 @@
     import { storeToRefs } from 'pinia'
 
   // import features
-    import { formatDate } from "@/lib/formatDate";
+    import { formatDate } from "@/lib/format_data/formatDate";
     import { openLoadFile } from "@/lib/files/openLoadFile";
     import { openLink } from "@/lib/openLink";
-    import { sendEmail } from "@/lib/sendEmail";
-    import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
-    import { formatPhoneNumber } from "@/lib/formatPhoneNumber";
-    import { formatAddress } from "@/lib/formatAddress";
+    import { sendEmail } from "@/lib/features/sendEmail";
+    import { openInGoogleMaps} from "@/lib/features/openInGoogleMaps";
+    import { formatPhoneNumber } from "@/lib/format_data/formatPhoneNumber";
+    import { formatAddress } from "@/lib/format_data/formatAddress";
     import {filterComponentByOwner} from "@/lib/filterByOwner";
 
 // import base elements
@@ -37,8 +37,8 @@
     import FeedbackImg from '@/assets/img/feedback.svg'
     import DeleteImg from '@/assets/img/delete.svg'
     import NewImg from '@/assets/img/new.svg'
-    import PrivateImg from '@/assets/img/private.svg'
-    import PrivateNoImg from '@/assets/img/privateNo.svg'
+    import PrivateImg from '@/assets/img/lock-true.svg'
+    import PrivateNoImg from '@/assets/img/lock-false.svg'
 
   // import stores
     import { useMeFullGetStore } from '@/stores/useMeProfile'

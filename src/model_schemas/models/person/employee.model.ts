@@ -15,6 +15,7 @@ export interface EmployeeList {
     Avatar: string | null
     Position: string
     IsAttorney: boolean
+    IsAdmin: boolean
 }
 
 // EMPLOYEE FULL GET
@@ -30,6 +31,7 @@ export interface EmployeeFullGet {
     Position: string
     IsAttorney: boolean
     AttorneyCommission: string | null
+    IsAdmin: boolean
 
     LicenseNumber: string | null
     LicenseDate: string | null

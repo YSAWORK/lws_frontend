@@ -54,3 +54,19 @@ export const NaturalPersonFullGetSchema = z.object({
 })
 
 export type NaturalPersonFullGetDTO = z.infer<typeof NaturalPersonFullGetSchema>
+
+
+// NATURAL PERSON EDIT
+export const NaturalPersonEditSchema = z.object({
+    id: z.string(),
+    first_name: z.string(),
+    last_name: z.string(),
+    surname: z.string().nullable().optional(),
+    register_id: z.string().nullable().optional(),
+    passport: z.string().nullable().optional(),
+    date_birth: z.string().nullable().optional(),
+    avatar: z.string().nullable().optional(),
+    avatar_file: z.file().optional().nullable(),
+})
+
+export type NaturalPersonEditDTO = z.infer<typeof NaturalPersonEditSchema>

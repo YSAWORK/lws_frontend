@@ -30,9 +30,9 @@
 
         emails: EmailShort[] | null
         phones: PhoneShort[] | null
-        addresses: AddressShort[] | null
-        documents: DocumentModel[] | null
-        feedbacks: FeedbackShort[] | null
+        addresses: AddressShort[]
+        documents: DocumentModel[]
+        feedbacks: FeedbackShort[]
         notes: string | null
         global_code: string | null
 

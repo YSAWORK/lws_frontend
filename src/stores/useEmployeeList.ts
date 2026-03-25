@@ -112,6 +112,10 @@ export const useEmployeeListStore = defineStore("employeeList", () => {
     })
 
     // GETTERS (computed)
+    function getEmployeeById(id: number) {
+        return employeeList.value.find(e => e.Id === id)
+    }
+
     const filteredEmployeeList = computed(() => {
         const q = fullNameQuery.value.trim().toLowerCase()
 
@@ -197,5 +201,6 @@ export const useEmployeeListStore = defineStore("employeeList", () => {
 
         // actions
         fetchEmployeeList,
+        getEmployeeById,
     }
 })

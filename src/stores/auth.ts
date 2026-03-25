@@ -5,6 +5,7 @@ type AuthState = {
     access: string | null
     refresh: string | null
     employeeId: number | null
+    IsAdmin: boolean | null
 }
 
 export const useAuthStore = defineStore("auth", {
@@ -12,6 +13,7 @@ export const useAuthStore = defineStore("auth", {
         access: null,
         refresh: null,
         employeeId: null,
+        IsAdmin: null,
     }),
 
     actions: {
@@ -19,15 +21,18 @@ export const useAuthStore = defineStore("auth", {
             const access = localStorage.getItem("access")
             const refresh = localStorage.getItem("refresh")
             const employeeId = localStorage.getItem("employee_id")
+            const IsAdmin = localStorage.getItem("is_administrator")
 
             this.access = access
             this.refresh = refresh
             this.employeeId = employeeId ? Number(employeeId) : null
+            this.IsAdmin = !!IsAdmin
         },
 
-        setAuth(data: { access: string; refresh?: string | null; employee_id: number | null }) {
+        setAuth(data: { access: string; refresh?: string | null; employee_id: number | null; is_administrator: boolean | null }) {
             this.access = data.access
             this.employeeId = data.employee_id
+            this.IsAdmin = data.is_administrator
 
             localStorage.setItem("access", data.access)
 

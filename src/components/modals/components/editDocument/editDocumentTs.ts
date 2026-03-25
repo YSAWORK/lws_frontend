@@ -26,6 +26,8 @@ export function useEditDocumentModal(
         file: document.file,
         notes: document.notes,
         is_personal: document.is_personal,
+        is_blocked: document.is_blocked,
+        created_by: document.created_by,
         existing_file_url: document.existing_file_url,
     })
 
@@ -40,6 +42,7 @@ export function useEditDocumentModal(
                 formData.append("extension", payload.extension)
             }
             formData.append("is_personal", String(payload.is_personal))
+            formData.append("is_blocked", String(payload.is_blocked))
             if (payload.date !== null) {
                 formData.append("date", payload.date)
             }

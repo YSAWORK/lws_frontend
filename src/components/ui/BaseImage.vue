@@ -7,6 +7,8 @@
     src?: string
     alt?: string
     shadow?: 'norm'
+    paddingStyle?: string // 0 0 0 1vw
+    cursorStyle?: string
   }>()
 </script>
 
@@ -14,6 +16,10 @@
   <img class="base-image"
        :src="src"
        :alt="alt"
+       :style="{
+            padding: paddingStyle,
+            cursor: cursorStyle,
+        }"
        :class="[
            `size-${size}`,
            `shadow-${shadow}`
@@ -52,8 +58,8 @@
   }
 
   .size-sm-icon {
-    width: 12px;
-    height: 12px;
+    width: 25px;
+    height: 25px;
     object-fit: contain;
     border: none;
     border-radius: 3px;
@@ -62,14 +68,6 @@
 
   .size-icon:hover{
     opacity: 1;
-  }
-
-  .size-sm-icon{
-    width: 20px;
-    height: 20px;
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
   }
 
   .shadow-norm {

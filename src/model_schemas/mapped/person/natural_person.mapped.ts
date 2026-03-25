@@ -3,7 +3,7 @@
 // IMPORT TOOLS
     import {NaturalPersonDTO, NaturalPersonListSchema} from "@/model_schemas/dto/person/natural_person.dto";
     import type {NaturalPersonList} from "@/model_schemas/models/person/natural_person.model";
-    import type {NaturalPersonFullGetDTO} from "@/model_schemas/dto/person/natural_person.dto";
+    import type {NaturalPersonFullGetDTO, NaturalPersonEditDTO} from "@/model_schemas/dto/person/natural_person.dto";
     import type {NaturalPersonFullGet} from "@/model_schemas/models/person/natural_person.model";
     import { mapAddressShort } from "@/model_schemas/mapped/components/address.mapped"
     import { mapEmailShort } from "@/model_schemas/mapped/components/email.mapped"
@@ -49,3 +49,20 @@
             global_code: dto.global_code
         }
     }
+
+// MAPPER FROM FULL MODEL TO EDIT MODEL
+export function mapNaturalPersonFullToEditDTO(
+    person: NaturalPersonFullGetDTO
+): NaturalPersonEditDTO {
+    return {
+        id: String(person.id),
+        first_name: person.first_name ?? "",
+        last_name: person.last_name ?? "",
+        surname: person.surname ?? "",
+        register_id: person.register_id ?? "",
+        date_birth: person.date_birth ?? "",
+        passport: person.passport ?? "",
+        avatar: person.avatar ?? null,
+        avatar_file: null
+    }
+}

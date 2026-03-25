@@ -12,6 +12,7 @@ export function mapPhoneShort (dto: PhoneShortDTO): PhoneShort {
         phone_number: dto.phone_number,
         notes: dto.notes,
         is_personal: dto.is_personal,
+        is_blocked: dto.is_blocked,
         created_by: dto.created_by,
         feedbacks: dto.feedbacks.map(mapFeedbackShort),
         global_code: dto.global_code

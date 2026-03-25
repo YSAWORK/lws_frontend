@@ -21,6 +21,7 @@ export function useCreatePhoneModal(
         phone_number: "",
         is_personal: false,
         notes: null,
+        is_blocked: false,
         owner,
     })
 

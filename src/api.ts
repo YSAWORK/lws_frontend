@@ -20,6 +20,7 @@ function hardLogout() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("employee_id");
+    localStorage.removeItem("is_administrator");
 
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.assign(`/login?next=${next}`);

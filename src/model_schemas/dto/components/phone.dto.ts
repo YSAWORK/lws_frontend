@@ -13,6 +13,7 @@ import {EmailCreateSchema} from "@/model_schemas/dto/components/email.dto";
         notes: z.string().nullable(),
         feedbacks: z.array(FeedbackShortSchema),
         is_personal: z.boolean(),
+        is_blocked: z.boolean(),
         created_by: z.number(),
         global_code: z.string(),
     })
@@ -23,11 +24,13 @@ import {EmailCreateSchema} from "@/model_schemas/dto/components/email.dto";
     export const PhoneCreateSchema = z.object({
         phone_number: z.string(),
         is_personal: z.boolean(),
+        is_blocked: z.boolean(),
         notes: z.string().nullable().optional(),
         owner: OwnerSchema
     }).transform((data) => ({
         phone_number: data.phone_number,
         is_personal: data.is_personal,
+        is_blocked: data.is_blocked,
         notes: data.notes,
         owner_id: data.owner.id,
         owner_key: data.owner.key,

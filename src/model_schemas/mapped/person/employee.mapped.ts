@@ -21,6 +21,7 @@ export function mapEmployee(dto: EmployeeDTO): EmployeeList {
         Avatar: dto.avatar ?? null,
         Position: dto.position,
         IsAttorney: dto.is_attorney,
+        IsAdmin: dto.is_administrator,
     }
 }
 
@@ -40,6 +41,7 @@ export function mapEmployeeFullGet(dto: EmployeeFullGetDTO): EmployeeFullGet {
         Position: dto.position,
         IsAttorney: dto.is_attorney,
         AttorneyCommission: dto.attorney_commission,
+        IsAdmin: dto.is_administrator,
 
         LicenseNumber: dto.series_number_license,
         LicenseDate: dto.date_issued_license,

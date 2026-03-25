@@ -8,11 +8,11 @@
     import { useRoute } from 'vue-router'
 
     // import features
-    import { formatDate } from "@/lib/formatDate";
+    import { formatDate } from "@/lib/format_data/formatDate";
     import { openLoadFile } from "@/lib/files/openLoadFile";
     import { openLink } from "@/lib/openLink";
-    import { sendEmail } from "@/lib/sendEmail";
-    import { openInGoogleMaps} from "@/lib/openInGoogleMaps";
+    import { sendEmail } from "@/lib/features/sendEmail";
+    import { openInGoogleMaps} from "@/lib/features/openInGoogleMaps";
 
     // import base elements
     import Base from "@/components/templates/base.vue";
@@ -42,8 +42,8 @@
     import { openEditNotesModal } from "@/components/modals/global/editNotes/editNotesTs"
     import { openFeedbacksModal } from "@/components/modals/global/open&addFeedback/open&addFeedbackTs";
     import type { FeedbackShortDTO } from "@/model_schemas/dto/feedback/feedback.dto";
-    import {formatPhoneNumber} from "@/lib/formatPhoneNumber";
-    import {formatAddress} from "@/lib/formatAddress";
+    import {formatPhoneNumber} from "@/lib/format_data/formatPhoneNumber";
+    import {formatAddress} from "@/lib/format_data/formatAddress";
 
     // load API
     const store = useEmployeeFullGetStore()

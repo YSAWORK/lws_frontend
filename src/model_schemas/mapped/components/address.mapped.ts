@@ -23,6 +23,7 @@ export function mapAddressShort(dto: AddressShortDTO): AddressShort {
         unit_number: dto.unit_number ?? null,
         notes: dto.notes ?? null,
         is_personal: dto.is_personal,
+        is_blocked: dto.is_blocked,
         created_by: dto.created_by,
         feedbacks: dto.feedbacks.map(mapFeedbackShort),
         global_code: dto.global_code

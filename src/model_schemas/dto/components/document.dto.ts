@@ -16,7 +16,8 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
             file: z.string().nullable(),
             notes: z.string().nullable(),
             is_personal: z.boolean(),
-            created_by: z.number().nullable(),
+            is_blocked: z.boolean(),
+            created_by: z.number(),
             created_at: z.coerce.date(),
             updated_at: z.coerce.date(),
             global_code: z.string(),
@@ -33,6 +34,7 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
             file: z.file().nullable(),
             notes: z.string().nullable(),
             is_personal: z.boolean(),
+            is_blocked: z.boolean(),
             owner: OwnerSchema,
         })
 
@@ -49,7 +51,9 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
             size: z.number(),
             file: z.instanceof(File).nullable(),
             notes: z.string().nullable(),
+            created_by: z.number(),
             is_personal: z.boolean(),
+            is_blocked: z.boolean(),
             existing_file_url: z.string().nullable(),
         })
 
@@ -67,6 +71,8 @@ import {OwnerSchema} from "@/model_schemas/dto/person/owner.dto";
                 size: document.size,
                 notes: document.notes,
                 is_personal: document.is_personal,
+                is_blocked: document.is_blocked,
+                created_by: document.created_by,
                 existing_file_url: document.file ?? null,
             }
         }

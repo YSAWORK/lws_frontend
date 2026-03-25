@@ -3,6 +3,7 @@
 <script setup lang="ts">
   // IMPORT TOOLS
     import { ref, computed } from "vue"
+    import {storeToRefs} from "pinia";
 
   // import types
     import type { DocumentUpdateDTO } from "@/model_schemas/dto/components/document.dto";
@@ -20,11 +21,22 @@
     import BaseInput from "@/components/ui/BaseInput.vue"
     import BaseButton from "@/components/ui/BaseButton.vue"
     import BaseTextArea from "@/components/ui/BaseTextArea.vue"
-    import BaseCheckBox from "@/components/ui/BaseCheckBox.vue"
     import BaseFileButton from "@/components/ui/BaseFileButton.vue"
     import BaseLine from "@/components/ui/BaseLine.vue"
     import OpenFile from "@/assets/img/open_file.svg";
     import BaseImage from "@/components/ui/BaseImage.vue";
+    import BaseToggle from "@/components/ui/BaseToggle.vue";
+
+    // import images
+    import PrivateImg from '@/assets/img/private.svg'
+    import PrivateNoImg from '@/assets/img/privateNo.svg'
+    import LockOther from "@/assets/img/lock-other.svg"
+    import LockFalse from "@/assets/img/lock-false.svg"
+
+    // store
+    import {useAuthStore} from "@/stores/auth";
+    const authStore = useAuthStore()
+    const { employeeId } = storeToRefs(authStore)
 
 
 const props = defineProps<{ document: DocumentUpdateDTO }>()
@@ -264,7 +276,7 @@ const emit = defineEmits<{
             </ContentContainer>
             <BaseInput
                 paddingStyle="0 0 0 1vw"
-                size="md"
+                size="25"
                 v-model="vm.form.value.date"
                 type="date"
             />
@@ -284,12 +296,22 @@ const emit = defineEmits<{
           </BaseTextArea>
 
         <!-- ПЕРСОНАЛЬНІСТЬ ФАЙЛУ -->
-          <BaseCheckBox
-              title="Ніхто, окрім Вас не буде бачити цей файл"
-              style="padding-left: 6.5vw"
-              v-model="vm.form.value.is_personal"
-              label="Персональні дані">
-          </BaseCheckBox>
+          <ContentContainer flex="row" paddingStyle="0 0 0 calc(100px + 1vw)" v-if="vm.form.value.created_by === employeeId">
+            <BaseToggle
+                v-model="vm.form.value.is_personal"
+                :image="vm.form.value.is_personal ? PrivateImg : PrivateNoImg"
+                :title="vm.form.value.is_personal ? `Приватний компонент. Видимий лише Вам. Натисніть щоб змінити` : 'Публічний компонент. Видимий команді. Натисніть щоб змінити'"
+                buttonSize="md"
+                imageSize="icon"
+            />
+            <BaseToggle
+                v-model="vm.form.value.is_blocked"
+                :image="vm.form.value.is_blocked ? LockOther : LockFalse"
+                :title="vm.form.value.is_personal ? `Компонент не заблоковано. Дозволена зміна та видалення. Натисніть щоб змінити` : 'Компонент заблоковано. Заборонена зміна та видалення. Натисніть щоб змінити'"
+                buttonSize="md"
+                imageSize="icon"
+            />
+          </ContentContainer>
         </ContentContainer>
 
         <p v-if="vm.errors.value.nonField.length" class="form-error">

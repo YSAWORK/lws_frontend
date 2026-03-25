@@ -12,6 +12,7 @@ export interface DocumentModel {
     file: string | null
     notes: string | null
     is_personal: boolean
+    is_blocked: boolean
     created_by: number | null
     created_at: Date
     updated_at: Date

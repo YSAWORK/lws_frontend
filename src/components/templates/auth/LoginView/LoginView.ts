@@ -99,6 +99,9 @@ export function LoginView() {
             auth.initFromStorage()
             if (data?.employee_id != null) localStorage.setItem("employee_id", String(data.employee_id))
             else localStorage.removeItem("employee_id")
+            if (data?.is_administrator != null) localStorage.setItem("is_administrator", data.is_administrastor)
+            else localStorage.removeItem("is_administrator")
+
 
 
             const q = router.currentRoute.value.query

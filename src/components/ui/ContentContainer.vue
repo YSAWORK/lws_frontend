@@ -16,6 +16,8 @@ defineProps<{
   maxHeight?: string
   overflow?: 'auto' | 'hidden' | 'scroll'
   height?: string
+  setWidth?: string
+  textAlign?: 'left' | 'center' | 'right' | 'justify'
 }>()
 
 </script>
@@ -32,9 +34,11 @@ defineProps<{
           `align-items-${alignItems}`,
           `justifyContent-${justifyContent}`,
           `divStyle-${divStyle}`,
+          `text-align-${textAlign}`,
       ]"
       :style="{
         padding: paddingStyle,
+        width: setWidth,
         ...(height ? { height } : {}),
         ...(columns ? { display: 'grid', gridTemplateColumns: columns } : {}),
         ...(maxHeight ? { maxHeight, overflowY: overflow ?? 'auto' } : {}),
@@ -166,4 +170,17 @@ defineProps<{
     align-items: flex-end;
   }
 
+
+  .text-align-left {
+    text-align: left;
+  }
+  .text-align-center {
+    text-align: center;
+  }
+  .text-align-right {
+    text-align: right;
+  }
+  .text-align-justify {
+    text-align: justify;
+  }
 </style>

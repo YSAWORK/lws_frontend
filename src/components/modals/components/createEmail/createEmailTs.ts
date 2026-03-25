@@ -20,6 +20,7 @@ export function useCreateEmailModal(
     const form = ref<EmailCreateFormDTO>({
         email: "",
         is_personal: false,
+        is_blocked: false,
         notes: null,
         owner,
     })

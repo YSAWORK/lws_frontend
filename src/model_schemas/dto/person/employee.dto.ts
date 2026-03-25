@@ -17,6 +17,7 @@ export const EmployeeSchema = z.object({
     avatar: z.string().nullable(),
     position: z.string(),
     is_attorney: z.boolean(),
+    is_administrator: z.boolean(),
 })
 
 export type EmployeeDTO = z.infer<typeof EmployeeSchema>
@@ -54,6 +55,7 @@ export const EmployeeFullGetSchema = z.object({
     date_issued_certificate: z.string().nullable(),
     issuing_organization_certificate: z.string().nullable(),
     attorney_certificate_file: z.string().nullable(),
+    is_administrator: z.boolean(),
 
     emails: z.array(EmailShortSchema),
     phones: z.array(PhoneShortSchema),

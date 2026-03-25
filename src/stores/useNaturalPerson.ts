@@ -1,53 +1,59 @@
 // .src/stores/useNaturalPerson.ts
 
-// IMPORT TOOLS
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { api } from "@/api"
+import {
+    NaturalPersonFullGetSchema,
+    type NaturalPersonFullGetDTO,
+} from "@/model_schemas/dto/person/natural_person.dto"
 
-// IMPORT SCHEMAS AND TYPES
-import {NaturalPersonFullGetSchema } from "@/model_schemas/dto/person/natural_person.dto";
-import { mapNaturalPersonFullGet } from "@/model_schemas/mapped/person/natural_person.mapped";
-import type {NaturalPersonFullGet } from "@/model_schemas/models/person/natural_person.model"
+import { mapNaturalPersonFullGet } from "@/model_schemas/mapped/person/natural_person.mapped"
+import type { NaturalPersonFullGet } from "@/model_schemas/models/person/natural_person.model"
 
-// DEFINE STORE
 export const useNaturalPersonFullGetStore = defineStore("naturalPersonFullGet", () => {
     // STATE
-    const NaturalPerson = ref<NaturalPersonFullGet | null>(null)
+    const naturalPersonDto = ref<NaturalPersonFullGetDTO | null>(null)
     const isLoading = ref(false)
     const error = ref<string | null>(null)
 
+    // DERIVED UI MODEL
+    const naturalPerson = computed<NaturalPersonFullGet | null>(() => {
+        if (!naturalPersonDto.value) return null
+        return mapNaturalPersonFullGet(naturalPersonDto.value)
+    })
+
     // ACTIONS
-    async function fetchNaturalPersonFullGet(id: number): Promise<NaturalPersonFullGet | null> {
+    async function fetchNaturalPersonFullGet(id: number): Promise<NaturalPersonFullGetDTO | null> {
         isLoading.value = true
         error.value = null
 
         try {
-            const {data} = await api.get(`person/natural_person/${id}/`)
+            const { data } = await api.get(`person/natural_person/${id}/`)
             const dto = NaturalPersonFullGetSchema.parse(data)
-            const mapped = mapNaturalPersonFullGet(dto)
-            NaturalPerson.value = mapped
-            return mapped
-
+            naturalPersonDto.value = dto
+            return dto
         } catch (err) {
-            error.value = 'Помилка завантаження даних фізичної особи.'
+            error.value = "Помилка завантаження даних фізичної особи."
             console.error(err)
-            NaturalPerson.value = null
+            naturalPersonDto.value = null
             return null
         } finally {
-            isLoading.value = false}
+            isLoading.value = false
+        }
     }
 
     function clear() {
-        NaturalPerson.value = null
+        naturalPersonDto.value = null
         error.value = null
     }
 
     return {
-        NaturalPerson,
+        naturalPersonDto,
+        naturalPerson,
         isLoading,
         error,
         fetchNaturalPersonFullGet,
-        clear
+        clear,
     }
 })

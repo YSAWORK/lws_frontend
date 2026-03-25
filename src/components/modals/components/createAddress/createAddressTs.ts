@@ -34,6 +34,7 @@ export function useCreateAddressModal(
         unit_number: null,
         notes: "",
         is_personal: false,
+        is_blocked: false,
         owner,
     })
 

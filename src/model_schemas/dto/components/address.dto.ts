@@ -22,6 +22,7 @@ export const AddressShortSchema = z.object({
     unit_number: z.string().nullable(),
     notes: z.string().nullable(),
     is_personal: z.boolean(),
+    is_blocked: z.boolean(),
     created_by: z.number(),
     feedbacks: z.array(FeedbackShortSchema),
     global_code: z.string(),
@@ -45,6 +46,7 @@ export const AddressCreateSchema = z.object({
     unit_number: z.string().nullable(),
     notes: z.string().nullable().optional(),
     is_personal: z.boolean(),
+    is_blocked: z.boolean(),
     owner: OwnerSchema
 }).transform((data) => ({
     postal_code: data.postal_code,
@@ -61,6 +63,7 @@ export const AddressCreateSchema = z.object({
     unit_number: data.unit_number,
     notes: data.notes,
     is_personal: data.is_personal,
+    is_blocked: data.is_blocked,
     owner_id: data.owner.id,
     owner_key: data.owner.key,
 }))

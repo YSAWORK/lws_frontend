@@ -17,7 +17,7 @@ const isOpen = ref(false)
        ]">
 
     <div class="collapse_header" >
-      <div class="subtitle_string_type_h3" @click="isOpen = !isOpen">
+      <div class="subtitle_string_type_h3" style="cursor: pointer;" @click="isOpen = !isOpen">
         {{ title }}
       </div>
       <div>

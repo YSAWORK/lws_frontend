@@ -15,6 +15,7 @@ export function mapDocument(dto: DocumentDTO): DocumentModel {
         file: dto.file,
         notes: dto.notes,
         is_personal: dto.is_personal,
+        is_blocked: dto.is_blocked,
         created_by: dto.created_by,
         created_at: new Date(dto.created_at),
         updated_at: new Date(dto.updated_at),
