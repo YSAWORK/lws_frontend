@@ -16,7 +16,7 @@
     // NATURAL PERSON SHORT MAP
     export function mapNaturalPerson(dto: NaturalPersonDTO): NaturalPersonList {
         return {
-            Id: dto.id,
+            id: dto.id,
             FullName: `${dto.last_name} ${dto.first_name} ${dto.surname}`,
             Avatar: dto.avatar ?? null,
         }
@@ -27,7 +27,7 @@
         const fullName = [dto.last_name, dto.first_name, dto.surname].filter(Boolean).join(" ")
 
         return {
-            Id: dto.id,
+            id: dto.id,
             FullName: fullName,
 
             TaxId: dto.register_id ?? null,
@@ -46,6 +46,9 @@
 
             WebCourt: dto.is_web_court,
             notes: dto.notes,
+            created_by: dto.created_by,
+            is_blocked: dto.is_blocked,
+            is_personal: dto.is_personal,
             global_code: dto.global_code
         }
     }

@@ -10,14 +10,14 @@
 // NATURAL PERSON
     // NATURAL PERSON LIST
         export interface NaturalPersonList {
-            Id: number
+            id: number
             FullName: string
             Avatar: string | null
         }
 
     // NATURAL PERSON FULL GET
     export interface NaturalPersonFullGet {
-        Id: number
+        id: number
         FullName: string
 
         TaxId: string | null
@@ -34,6 +34,9 @@
         documents: DocumentModel[]
         feedbacks: FeedbackShort[]
         notes: string | null
+        created_by: number
+        is_blocked: boolean
+        is_personal: boolean
         global_code: string | null
 
         WebCourt: boolean | null

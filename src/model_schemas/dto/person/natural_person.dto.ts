@@ -50,6 +50,9 @@ export const NaturalPersonFullGetSchema = z.object({
 
     is_web_court: z.boolean(),
     notes: z.string().nullable(),
+    created_by: z.number(),
+    is_blocked: z.boolean(),
+    is_personal: z.boolean(),
     global_code: z.string(),
 })
 

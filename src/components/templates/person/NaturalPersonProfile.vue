@@ -155,7 +155,7 @@ function getOwner(id: number | string): string {
     function handleEmailCreate() {
       if (!naturalPerson.value) return
       openCreateEmailModal({
-        owner: { key: "app_person.Person", id: naturalPerson.value.Id },
+        owner: { key: "app_person.Person", id: naturalPerson.value.id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(personId.value)
         },
@@ -166,7 +166,7 @@ function getOwner(id: number | string): string {
     function handlePhoneCreate() {
       if (!naturalPerson.value) return
       openCreatePhoneModal({
-        owner: { key: "app_person.Person", id: naturalPerson.value.Id },
+        owner: { key: "app_person.Person", id: naturalPerson.value.id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(personId.value)
         },
@@ -177,7 +177,7 @@ function getOwner(id: number | string): string {
     function handleAddressCreate() {
       if (!naturalPerson.value) return
       openCreateAddressModal({
-        owner: { key: "app_person.Person", id: naturalPerson.value.Id },
+        owner: { key: "app_person.Person", id: naturalPerson.value.id },
         onCreated: async () => {
           await store.fetchNaturalPersonFullGet(personId.value)
         },
@@ -188,7 +188,7 @@ function getOwner(id: number | string): string {
   function handleDocumentCreate() {
     if (!naturalPerson.value) return
     openCreateDocumentModal({
-      owner: { key: "app_person.Person", id: naturalPerson.value.Id },
+      owner: { key: "app_person.Person", id: naturalPerson.value.id },
       onCreated: async () => {
         await store.fetchNaturalPersonFullGet(personId.value)
       },
@@ -262,6 +262,48 @@ function getOwner(id: number | string): string {
     })
   }
 
+import { ChangeOwnerKey, ChangeOwnerRegistry, ChangeOwnerModel } from "@/components/modals/global/changeOwner/changeOwnerRegistry"
+import { openEditOwnerModal } from "@/components/modals/global/changeOwner/changeOwner"
+
+// Редагування власника компонента
+  // Функція-декоратор, що перевіряє наявність батьківської моделі
+  function editOwner(key: ChangeOwnerKey, model: ChangeOwnerModel) {
+    if (!naturalPerson.value) return
+    handleEditOwner(key, model, naturalPerson.value)
+  }
+
+  // Функція виклику модального вікна
+    function handleEditOwner<K extends ChangeOwnerKey>(
+        key: K,
+        model: ChangeOwnerModel,
+        parent: Record<string, any>,
+    ) {
+      const cfg = ChangeOwnerRegistry[key]
+      // Виклик модального вікна
+      openEditOwnerModal({
+        item: model,
+        url: cfg.url(model.id),
+        title: cfg.title,
+        displayValue: cfg.display?.(model),
+        // Оновлення DOM
+        onSaved: async (updated) => {
+          if (key === "natural_person") {
+            parent.created_by = updated.created_by ?? null
+            return
+          }
+
+          const list = parent[key]
+          if (!Array.isArray(list)) return
+
+          parent[key] = list.map((x: any) =>
+              x.id === updated.id ? { ...x, created_by: updated.created_by ?? null } : x
+          )
+          await store.fetchNaturalPersonFullGet(personId.value)
+        },
+      })
+    }
+
+
 
   // Редагування Нотаток
     type IdModel = {
@@ -334,40 +376,46 @@ function getOwner(id: number | string): string {
     }
 
 // Зміна статусу блокування компонента
-  type IdModelToggle = {
+  type IdModelBlockToggle = {
     id: number | string
-    is_personal: boolean
+    is_blocked: boolean
   }
-  type ToggleRegistryModel = IdModelToggle & Record<string, any>
+
+  type ToggleRegistryBlockModel = IdModelBlockToggle & Record<string, any>
 
   const ComponentIsBlockedRegistry = {
     emails: {
-      url: (id: IdModelToggle["id"]) => `/components/email/${id}/`,
+      url: (id: IdModelBlockToggle["id"]) => `/components/email/${id}/`,
       title: "Змінити блокування email:",
       display: (e: any) => e.email ?? "",
     },
     phones: {
-      url: (id: IdModelToggle["id"]) => `/components/phone/${id}/`,
+      url: (id: IdModelBlockToggle["id"]) => `/components/phone/${id}/`,
       title: "Змінити блокування номера телефону:",
       display: (p: any) => formatPhoneNumber(p.phone_number) ?? "",
     },
     addresses: {
-      url: (id: IdModelToggle["id"]) => `/components/address/${id}/`,
+      url: (id: IdModelBlockToggle["id"]) => `/components/address/${id}/`,
       title: "Змінити блокування адреси:",
       display: (a: any) => formatAddress(a) ?? "",
     },
     documents: {
-      url: (id: IdModelToggle["id"]) => `/components/document/${id}/`,
+      url: (id: IdModelBlockToggle["id"]) => `/components/document/${id}/`,
       title: "Змінити блокування файлу:",
       display: (d: any) => `${d.name ?? ""}${d.extension ?? ""}`,
     },
+    natural_person: {
+      url: (id: IdModelToggle["id"]) => `/person/natural_person/${id}/`,
+      title: "Змінити блокування профайлу фізичної особи:",
+      display: (n: any) => n.FullName ?? "",
+    },
   } as const
 
-  export type ComponentIsBlockedKey = keyof typeof ComponentPersonalRegistry
+  export type ComponentIsBlockedKey = keyof typeof ComponentIsBlockedRegistry
 
   function toggleComponentIsBlocked(
       key: ComponentIsBlockedKey,
-      model: IdModelToggle,
+      model: IdModelBlockToggle,
   ) {
     if (!naturalPerson.value) return
     handleToggleComponentIsBlocked(key, model)
@@ -375,7 +423,7 @@ function getOwner(id: number | string): string {
 
   function handleToggleComponentIsBlocked<K extends ComponentIsBlockedKey>(
       key: K,
-      model: ToggleRegistryModel,
+      model: ToggleRegistryBlockModel,
   ) {
     const cfg = ComponentIsBlockedRegistry[key]
 
@@ -394,6 +442,13 @@ function getOwner(id: number | string): string {
         await store.fetchNaturalPersonFullGet(personId.value)},
     })
   }
+
+// Зміна статусу блокування компонента
+  type IdModelToggle = {
+    id: number | string
+    is_personal: boolean
+  }
+  type ToggleRegistryModel = IdModelToggle & Record<string, any>
 
 // Зміна статусу персонального компонента
 const ComponentPersonalRegistry = {
@@ -416,6 +471,11 @@ const ComponentPersonalRegistry = {
     url: (id: IdModelToggle["id"]) => `/components/document/${id}/`,
     title: "Змінити приватність документу:",
     display: (d: any) => `${d.name ?? ""}${d.extension ?? ""}`,
+  },
+  natural_person: {
+    url: (id: IdModelToggle["id"]) => `/person/natural_person/${id}/`,
+    title: "Змінити приватність профайлу фізичної особи:",
+    display: (n: any) => n.FullName ?? "",
   },
 } as const
 
@@ -463,7 +523,7 @@ function handleOpenFeedbacks(
       opts.elementCode!,
       opts.title,
       async () => {
-        const employeeId = naturalPerson.value?.Id
+        const employeeId = naturalPerson.value?.id
         if (!employeeId) return
         await store.fetchNaturalPersonFullGet(personId.value)
       }
@@ -520,7 +580,8 @@ onMounted(async () => {
       Головна | Фізичні особи
     </template>
 
-    <template #main_column_left v-if="naturalPerson">
+    <template #main_column_left >
+        <ContentContainer v-if="naturalPerson && (!naturalPerson.is_personal || currentEmployee?.IsAdmin || employeeId === naturalPerson.created_by)" padding="none">
           <ContentContainer padding="none" grid="1fr 6vw">
             <ContentContainer flex="row" padding="none" no-background="true" style="background: rgba(var(--bg-rgb), 0.8); margin-top: auto; flex-wrap: wrap;">
               <BaseButton
@@ -596,21 +657,64 @@ onMounted(async () => {
               </BaseButton>
             </ContentContainer>
             <ContentContainer padding="none" flex="row">
-              <BaseImage
-                  size="icon"
-                  paddingStyle="0"
-                  :src="OwnerYou">
-              </BaseImage>
-              <BaseImage
-                  size="icon"
-                  paddingStyle="0"
-                  :src="LockTrue">
-              </BaseImage>
-              <BaseImage
-                  size="icon"
-                  paddingStyle="0"
-                  :src="PrivateNoImg">
-              </BaseImage>
+              <!-- ПРИВАТНІСТЬ -->
+              <ContentContainer paddingStyle="0 0.5vw 0 0" style="min-width: 40px" noBackground="true">
+                <BaseImage
+                    v-if="employeeId === naturalPerson.created_by || currentEmployee?.IsAdmin"
+                    paddingStyle="0"
+                    cursorStyle="pointer"
+                    size="icon"
+                    :title="naturalPerson.is_personal
+                                  ? 'Інші не бачать цю електронну адресу. Натисніть щоб змінити'
+                                  : 'Цю електронну адресу бачать інші. Натисніть щоб змінити'"
+                    @click="toggleComponentPersonal('natural_person', naturalPerson)"
+                    :src="naturalPerson.is_personal ? PrivateImg : PrivateNoImg">
+                </BaseImage>
+              </ContentContainer>
+
+              <!-- БЛОКУВАННЯ -->
+              <ContentContainer paddingStyle="0 0.5vw 0 0" style="min-width: 40px" noBackground="true">
+                <BaseImage
+                    v-if="naturalPerson.is_blocked && naturalPerson.created_by !== employeeId && !currentEmployee?.IsAdmin"
+                    title="Редагування/видалення заблоковано власником"
+                    paddingStyle="0"
+                    size="icon"
+                    :src="LockOther">
+                </BaseImage>
+                <BaseImage
+                    v-if="naturalPerson.created_by === employeeId || currentEmployee?.IsAdmin"
+                    paddingStyle="0"
+                    size="icon"
+                    cursorStyle="pointer"
+                    @click="toggleComponentIsBlocked('natural_person', naturalPerson)"
+                    :title="naturalPerson.is_blocked
+                                ? 'Ви заблокували редагування/видалення. Натисніть щоб змінити' : 'Ви дозволили редагування/видалення. Натисніть щоб змінити'"
+                    :src="naturalPerson.is_blocked ? LockTrue : LockFalse">
+                </BaseImage>
+              </ContentContainer>
+
+              <!-- ВЛАСНИК ЕЛЕМЕНТУ -->
+              <ContentContainer padding="none" style="min-width: 40px" noBackground="true">
+                <BaseImage
+                    v-if="!currentEmployee?.IsAdmin"
+                    size="icon"
+                    paddingStyle="0"
+                    :title="naturalPerson.created_by === employeeId
+                                  ? 'Ви власник елемента'
+                                  : 'Власник елемента: ' + getOwner(naturalPerson.created_by)"
+                    :src="naturalPerson.created_by === employeeId ? OwnerYou : OwnerOther">
+                </BaseImage>
+                <BaseImage
+                    v-if="currentEmployee?.IsAdmin"
+                    size="icon"
+                    paddingStyle="0"
+                    cursorStyle="pointer"
+                    :title="naturalPerson.created_by === employeeId
+                                  ? 'Ви власник елемента. Натисніть, щоб змінити'
+                                  : 'Власник елемента: ' + getOwner(naturalPerson.created_by) + '. Натисніть, щоб змінити'"
+                    :src="naturalPerson.created_by === employeeId ? OwnerYou : OwnerOther">
+                </BaseImage>
+              </ContentContainer>
             </ContentContainer>
             <BaseLine style="padding: 0; margin: 0"></BaseLine>
           </ContentContainer>
@@ -624,10 +728,10 @@ onMounted(async () => {
                 <template #actions>
                   <BaseButton
                       size="sm"
-                      :title="naturalPerson?.Id
+                      :title="naturalPerson?.id
                         ? `Прив'язати нову електронну пошту`
                         : `Неможливо визначити ID користувача`"
-                      :disabled="!naturalPerson?.Id"
+                      :disabled="!naturalPerson?.id || naturalPerson.is_blocked"
                       @click="handleEmailCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
@@ -670,6 +774,7 @@ onMounted(async () => {
                                 size="sm-icon"
                                 paddingStyle="0"
                                 cursorStyle="pointer"
+                                @click="editOwner('emails', email)"
                                 :title="email.created_by === employeeId
                                   ? 'Ви власник елемента. Натисніть, щоб змінити'
                                   : 'Власник елемента: ' + getOwner(email.created_by) + '. Натисніть, щоб змінити'"
@@ -679,38 +784,38 @@ onMounted(async () => {
 
                           <!-- БЛОКУВАННЯ -->
                           <ContentContainer padding="none" style="min-width: 15px" noBackground="true">
-                            <BaseImage
-                                v-if="email.is_blocked && email.created_by !== employeeId && !currentEmployee?.IsAdmin"
-                                title="Редагування/видалення заблоковано власником"
-                                paddingStyle="0"
-                                size="sm-icon"
-                                :src="LockOther">
-                            </BaseImage>
-                            <BaseImage
-                                v-if="email.created_by === employeeId || currentEmployee?.IsAdmin"
-                                paddingStyle="0"
-                                size="sm-icon"
-                                cursorStyle="pointer"
-                                @click="toggleComponentIsBlocked('emails', email)"
-                                :title="email.is_blocked
+                              <BaseImage
+                                  v-if="email.is_blocked && (email.created_by !== employeeId) && !currentEmployee?.IsAdmin"
+                                  title="Редагування/видалення заблоковано власником"
+                                  paddingStyle="0"
+                                  size="sm-icon"
+                                  :src="LockOther">
+                              </BaseImage>
+                              <BaseImage
+                                  v-if="email.created_by === employeeId || currentEmployee?.IsAdmin"
+                                  paddingStyle="0"
+                                  size="sm-icon"
+                                  cursorStyle="pointer"
+                                  @click="toggleComponentIsBlocked('emails', email)"
+                                  :title="email.is_blocked
                                 ? 'Ви заблокували редагування/видалення. Натисніть щоб змінити' : 'Ви дозволили редагування/видалення. Натисніть щоб змінити'"
-                                :src="email.is_blocked ? LockTrue : LockFalse">
-                            </BaseImage>
+                                  :src="email.is_blocked ? LockTrue : LockFalse">
+                              </BaseImage>
                           </ContentContainer>
 
                           <!-- ПРИВАТНІСТЬ -->
                           <ContentContainer padding="none" style="min-width: 15px" noBackground="true">
-                            <BaseImage
-                                v-if="employeeId === email.created_by || currentEmployee?.IsAdmin"
-                                paddingStyle="0"
-                                cursorStyle="pointer"
-                                size="sm-icon"
-                                :title="email.is_personal
-                                  ? 'Інші не бачать цю електронну адресу. Натисніть щоб змінити'
-                                  : 'Цю електронну адресу бачать інші. Натисніть щоб змінити'"
-                                @click="toggleComponentPersonal('emails', email)"
-                                :src="email.is_personal ? PrivateImg : PrivateNoImg">
-                            </BaseImage>
+                              <BaseImage
+                                  v-if="employeeId === email.created_by || currentEmployee?.IsAdmin"
+                                  paddingStyle="0"
+                                  cursorStyle="pointer"
+                                  size="sm-icon"
+                                  :title="email.is_personal
+                                    ? 'Інші не бачать цю електронну адресу. Натисніть щоб змінити'
+                                    : 'Цю електронну адресу бачать інші. Натисніть щоб змінити'"
+                                  @click="toggleComponentPersonal('emails', email)"
+                                  :src="email.is_personal ? PrivateImg : PrivateNoImg">
+                              </BaseImage>
                           </ContentContainer>
                         </ContentContainer>
                       </td>
@@ -768,7 +873,7 @@ onMounted(async () => {
                             </ContentContainer>
                           </BaseButton>
                           <BaseButton
-                              :disabled="email.is_blocked"
+                              :disabled="email.is_blocked || naturalPerson.is_blocked"
                               name="Кнопка видалення email"
                               size="sm"
                               @click="deleteComponent('emails', email)"
@@ -776,7 +881,7 @@ onMounted(async () => {
                             <BaseImage :src="DeleteImg" size="icon"/>
                           </BaseButton>
                           <BaseButton
-                              :disabled="email.is_blocked"
+                              :disabled="email.is_blocked || naturalPerson.is_blocked"
                               name="Кнопка редагування нотаток"
                               size="sm"
                               @click="editNotes('emails', email)"
@@ -803,10 +908,10 @@ onMounted(async () => {
                 <template #actions>
                   <BaseButton
                       size="sm"
-                      :title="naturalPerson?.Id
+                      :title="naturalPerson?.id
                         ? `Прив'язати новий контактний номер телефону`
                         : `Неможливо визначити ID користувача`"
-                      :disabled="!naturalPerson?.Id"
+                      :disabled="!naturalPerson?.id || naturalPerson.is_blocked"
                       @click="handlePhoneCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
@@ -933,7 +1038,7 @@ onMounted(async () => {
                             </ContentContainer>
                           </BaseButton>
                           <BaseButton
-                              :disabled="phone.is_blocked"
+                              :disabled="phone.is_blocked || naturalPerson.is_blocked"
                               name="Кнопка видалення номеру телефону"
                               size="sm"
                               @click="deleteComponent('phones', phone)"
@@ -941,7 +1046,7 @@ onMounted(async () => {
                             <BaseImage :src="DeleteImg" size="icon"/>
                           </BaseButton>
                           <BaseButton
-                              :disabled="phone.is_blocked"
+                              :disabled="phone.is_blocked || naturalPerson.is_blocked"
                               size="sm"
                               name="Кнопка редагування нотаток"
                               :title="phone.is_blocked ? `Редагування заблоковано` : `Редагувати нотатки до ` + formatPhoneNumber(phone.phone_number)"
@@ -970,10 +1075,10 @@ onMounted(async () => {
                 <template #actions>
                   <BaseButton
                       size="sm"
-                      :title="naturalPerson?.Id
+                      :title="naturalPerson?.id
                         ? `Прив'язати нову адресу`
                         : `Неможливо визначити ID користувача`"
-                      :disabled="!naturalPerson?.Id"
+                      :disabled="!naturalPerson?.id || naturalPerson.is_blocked"
                       @click="handleAddressCreate">
                     <BaseImage size="icon" :src="NewImg"></BaseImage>
                   </BaseButton>
@@ -1112,7 +1217,7 @@ onMounted(async () => {
                             </ContentContainer>
                           </BaseButton>
                           <BaseButton
-                              :disabled="address.is_blocked"
+                              :disabled="address.is_blocked || naturalPerson.is_blocked"
                               name="Кнопка видалення адреси"
                               size="sm"
                               @click="deleteComponent('addresses', address)"
@@ -1120,7 +1225,7 @@ onMounted(async () => {
                             <BaseImage :src="DeleteImg" size="icon"/>
                           </BaseButton>
                           <BaseButton
-                              :disabled="address.is_blocked"
+                              :disabled="address.is_blocked || naturalPerson.is_blocked"
                               size="sm"
                               @click="editNotes('addresses', address)"
                               name="Кнопка редагування нотаток"
@@ -1136,9 +1241,8 @@ onMounted(async () => {
               </BaseCollapse>
             </ContentContainer>
 
-
-            <!-- ФАЙЛИ -->
-            <ContentContainer
+          <!-- ФАЙЛИ -->
+          <ContentContainer
                 padding="none"
                 no-background="true"
                 v-if="activeSection === 'files'">
@@ -1159,10 +1263,10 @@ onMounted(async () => {
                       <th colspan="2">
                         <BaseButton
                             size="sm"
-                            :title="naturalPerson?.Id
+                            :title="naturalPerson?.id
                         ? `Додати файл`
                         : `Неможливо визначити ID користувача`"
-                            :disabled="!naturalPerson?.Id"
+                            :disabled="!naturalPerson?.id || naturalPerson.is_blocked"
                             @click=" handleDocumentCreate">
                           <BaseImage size="icon" :src="NewImg"></BaseImage>
                         </BaseButton>
@@ -1373,7 +1477,7 @@ onMounted(async () => {
                               <BaseImage  :src="DownloadFile" size="icon"/>
                             </BaseButton>
                             <BaseButton
-                                :disabled="document.is_blocked"
+                                :disabled="document.is_blocked || naturalPerson.is_blocked"
                                 title="Редагувати дані файлу"
                                 size="sm"
                                 @click="handleDocumentEdit(document)"
@@ -1381,7 +1485,7 @@ onMounted(async () => {
                               <BaseImage :src="EditImg" size="icon" />
                             </BaseButton>
                             <BaseButton
-                                :disabled="document.is_blocked"
+                                :disabled="document.is_blocked || naturalPerson.is_blocked"
                                 name="Кнопка видалення документу"
                                 size="sm"
                                 @click="deleteComponent('documents', document)"
@@ -1399,10 +1503,10 @@ onMounted(async () => {
               <ContentContainer v-else>
                 <BaseButton
                     size="sm"
-                    :title="naturalPerson?.Id
+                    :title="naturalPerson?.id
                         ? `Додати файл`
                         : `Неможливо визначити ID користувача`"
-                    :disabled="!naturalPerson?.Id"
+                    :disabled="!naturalPerson?.id"
                     @click=" handleDocumentCreate">
                   <BaseImage size="icon" :src="NewImg"></BaseImage>
                 </BaseButton>
@@ -1412,240 +1516,249 @@ onMounted(async () => {
               </ContentContainer>
             </ContentContainer>
 
+          <!-- НАГАДУВАННЯ -->
+          <ContentContainer
+              padding="none"
+              no-background="true"
+              v-if="activeSection === 'notifications'">
+            <ContentContainer class="prime_text_string" no-background="true" padding="none" v-if="!naturalPerson">
+              <BaseTableList variant="light">
+              </BaseTableList>
+            </ContentContainer>
+            <ContentContainer v-else>
+              <BaseButton
+                  size="sm"
+                  :title="naturalPerson?.id
+                      ? `Додати нагадування`
+                      : `Неможливо визначити ID користувача`"
+                  :disabled="!naturalPerson?.id"
+                  @click=" handleDocumentCreate">
+                <BaseImage size="icon" :src="NewImg"></BaseImage>
+              </BaseButton>
+              <ContentContainer  class="no_data_label" no-background="true" paddingStyle="11vw 0 0 0">
+                Нагадування відсутні
+              </ContentContainer>
+            </ContentContainer>
+          </ContentContainer>
 
+          <!-- НОТАТКИ -->
+          <ContentContainer
+              padding="left"
+              no-background="true"
+              v-if="activeSection === 'notes'"
+              flex="row"
+              grid="95% 5%">
+            <ContentContainer class="prime_text_string" no-background="true" padding="top" v-if="naturalPerson?.notes" maxHeight="750px">
+              {{ naturalPerson?.notes }}
+            </ContentContainer>
+            <ContentContainer  v-else class="no_data_label" no-background="true" paddingStyle="15vw 0 0 0">
+              Нотатки відсутні
+            </ContentContainer>
+            <ContentContainer
+                padding="none"
+                noBackground="true"
+                flex="row"
+                justifyContent="end"
+                alignItems="start">
+              <BaseButton
+                  name="Кнопка редагування нотаток"
+                  title="Редагувати нотатки"
+                  size="sm"
+                  :disabled="naturalPerson.is_blocked"
+                  v-if="naturalPerson"
+                  @click="editNotes('natural_person', {id: naturalPerson.id, notes: naturalPerson.notes})"
+              >
+                <BaseImage :src="EditImg" size="icon" />
+              </BaseButton>
+            </ContentContainer>
+          </ContentContainer>
 
-            <!-- НАГАДУВАННЯ -->
+          <!-- ГЛОБАЛЬНІ КОМЕНТАРІ -->
+          <ContentContainer
+              padding="left"
+              no-background="true"
+              v-if="activeSection === 'global_comments'"
+              flex="row"
+              grid="95% 5%">
+            <ContentContainer
+                v-if="naturalPerson && naturalPerson?.feedbacks?.length > 0"
+                padding="top"
+                no-background="true"
+                maxHeight="750px">
+              <ContentContainer
+                  v-for="feedback in naturalPerson?.feedbacks"
+                  :key="feedback.id"
+                  no-background="true"
+                  padding="bottom">
+                <div class="important_text" title="Дата публікації коментаря"> {{ formatDate(feedback.created_at) }} </div>
+                <div class="prime_text_string"> {{ feedback.notes ?? "—" }} </div>
+                <BaseLine width="think"></BaseLine>
+              </ContentContainer>
+            </ContentContainer>
+            <ContentContainer  v-else class="no_data_label" no-background="true" paddingStyle="15vw 0 0 0">
+              Глобальні коментарі відсутні
+            </ContentContainer>
             <ContentContainer
                 padding="none"
                 no-background="true"
-                v-if="activeSection === 'notifications'">
-              <ContentContainer class="prime_text_string" no-background="true" padding="none" v-if="!naturalPerson">
-                <BaseTableList variant="light">
-                </BaseTableList>
-              </ContentContainer>
-              <ContentContainer v-else>
-                <BaseButton
-                    size="sm"
-                    :title="naturalPerson?.Id
-                        ? `Додати нагадування`
-                        : `Неможливо визначити ID користувача`"
-                    :disabled="!naturalPerson?.Id"
-                    @click=" handleDocumentCreate">
-                  <BaseImage size="icon" :src="NewImg"></BaseImage>
-                </BaseButton>
-                <ContentContainer  class="no_data_label" no-background="true" paddingStyle="11vw 0 0 0">
-                  Нагадування відсутні
-                </ContentContainer>
-              </ContentContainer>
-            </ContentContainer>
-
-
-            <!-- НОТАТКИ -->
-            <ContentContainer
-                padding="left"
-                no-background="true"
-                v-if="activeSection === 'notes'"
                 flex="row"
-                grid="95% 5%">
-              <ContentContainer class="prime_text_string" no-background="true" padding="top" v-if="naturalPerson?.notes" maxHeight="750px">
-                {{ naturalPerson?.notes }}
-              </ContentContainer>
-              <ContentContainer  v-else class="no_data_label" no-background="true" paddingStyle="15vw 0 0 0">
-                Нотатки відсутні
-              </ContentContainer>
-              <ContentContainer
-                  padding="none"
-                  noBackground="true"
-                  flex="row"
-                  justifyContent="end"
-                  alignItems="start">
-                <BaseButton
-                    name="Кнопка редагування біографії"
-                    title="Редагувати біографію"
-                    size="sm"
-                    v-if="naturalPerson"
-                    @click="editNotes('natural_person', {id: naturalPerson.Id, notes: naturalPerson.notes})"
-                >
-                  <BaseImage :src="EditImg" size="icon" />
-                </BaseButton>
-              </ContentContainer>
+                justifyContent="end"
+                alignItems="start">
+              <BaseButton
+                  title="Додати глобальний коментар"
+                  size="sm"
+                  @click="handleOpenFeedbacks(naturalPerson, {
+                title: naturalPerson.FullName,
+                employeeCode: naturalPerson.global_code,
+                elementCode:  naturalPerson.global_code,
+                })"
+              >
+                <BaseImage :src="NewImg" size="icon" />
+              </BaseButton>
             </ContentContainer>
+          </ContentContainer>
 
-            <!-- ГЛОБАЛЬНІ КОМЕНТАРІ -->
-            <ContentContainer
-                padding="left"
-                no-background="true"
-                v-if="activeSection === 'global_comments'"
-                flex="row"
-                grid="95% 5%">
-              <ContentContainer
-                  v-if="naturalPerson && naturalPerson?.feedbacks?.length > 0"
-                  padding="top"
-                  no-background="true"
-                  maxHeight="750px">
+          <!-- БІОГРАФІЯ -->
+          <ContentContainer
+              v-if="activeSection === 'biography'"
+              padding="none"
+              no-background="true">
+            <ContentContainer maxHeight="750px">
                 <ContentContainer
-                    v-for="feedback in naturalPerson?.feedbacks"
-                    :key="feedback.id"
-                    no-background="true"
-                    padding="bottom">
-                  <div class="important_text" title="Дата публікації коментаря"> {{ formatDate(feedback.created_at) }} </div>
-                  <div class="prime_text_string"> {{ feedback.notes ?? "—" }} </div>
-                  <BaseLine width="think"></BaseLine>
-                </ContentContainer>
-              </ContentContainer>
-              <ContentContainer  v-else class="no_data_label" no-background="true" paddingStyle="15vw 0 0 0">
-                Глобальні коментарі відсутні
-              </ContentContainer>
-              <ContentContainer
-                  padding="none"
-                  no-background="true"
-                  flex="row"
-                  justifyContent="end"
-                  alignItems="start">
-                <BaseButton
-                    title="Додати глобальний коментар"
-                    size="sm"
-                    @click="handleOpenFeedbacks(naturalPerson, {
-                  title: naturalPerson.FullName,
-                  employeeCode: naturalPerson.global_code,
-                  elementCode:  naturalPerson.global_code,
-                  })"
-                >
-                  <BaseImage :src="NewImg" size="icon" />
-                </BaseButton>
-              </ContentContainer>
-            </ContentContainer>
+                    grid="15vw 1fr 3vw"
+                    paddingStyle="0 0 1vw 0">
 
-
-            <!-- БІОГРАФІЯ -->
-            <ContentContainer
-                v-if="activeSection === 'biography'"
-                padding="none"
-                no-background="true">
-              <ContentContainer maxHeight="750px">
-                  <ContentContainer
-                      grid="15vw 1fr 3vw"
-                      paddingStyle="0 0 1vw 0">
-
-                    <!-- ФОТО -->
-                    <BaseImage
-                        :src="naturalPerson?.Avatar
-                      ? naturalPerson?.Avatar
-                      : DefaultAvatar"
-                        size="lg"
-                        alt="Фото фізичної особи"
-                        title="Фото фізичної особи"
-                        shadow="norm">
-                    </BaseImage>
-                    <ContentContainer padding="none" flex="column" no-background="true" style="min-height: 20vh; justify-content: space-between;">
-                      <ContentContainer
-                          flex="column"
-                          padding="left"
-                          style="margin-left: 1vw">
-
-                        <!-- ПІБ -->
-                          <span
-                            class="title_string"
-                            title="ПІБ фізичної особи">
-                            {{naturalPerson?.FullName
-                                  ? naturalPerson?.FullName
-                                  : 'Відсутні дані'}}
-                          </span>
-                        <BaseLine size="half"></BaseLine>
-
-                        <!-- ДАТА НАРОДЖЕННЯ -->
-                        <ContentContainer
-                            name="Контейнер з датою народження"
-                            flex="row"
-                            style="min-height: 2vw"
-                            padding="string">
-                          <span class="chapter_title"> Дата народження: </span>
-                          <span
-                              class="subtitle_string_name_h2"
-                              title="Дата народження фізичної особи"> {{
-                              naturalPerson?.Birthday
-                                  ? formatDate(naturalPerson?.Birthday)
-                                  : "Відсутні дані"}}
-                          </span>
-                        </ContentContainer>
-
-                        <!-- ПОДАТКОВИЙ НОМЕР -->
-                        <ContentContainer
-                            flex="row"
-                            style="min-height: 2vw"
-                            padding="string">
-                          <span class="chapter_title"> Реєстраційний номер: </span>
-                          <span
-                              class="subtitle_string_name_h2"
-                              title="Податковий номер фізичної особи"> {{
-                              naturalPerson?.TaxId
-                                  ? naturalPerson?.TaxId
-                                  : "Відсутні дані"}}
-                          </span>
-                        </ContentContainer>
-
-                        <!-- ПАСПОРТ -->
-                        <ContentContainer
-                            flex="row"
-                            style="min-height: 2vw"
-                            padding="string">
-                          <span class="chapter_title"> Паспортні дані: </span>
-                          <span
-                              class="subtitle_string_name_h2"
-                              title="Паспортні дані фізичної особи"> {{
-                              naturalPerson?.Passport
-                                  ? naturalPerson?.Passport
-                                  : "Відсутні дані"}}
-                          </span>
-                        </ContentContainer>
-
-                      </ContentContainer>
-                </ContentContainer>
+                  <!-- ФОТО -->
+                  <BaseImage
+                      :src="naturalPerson?.Avatar
+                    ? naturalPerson?.Avatar
+                    : DefaultAvatar"
+                      size="lg"
+                      alt="Фото фізичної особи"
+                      title="Фото фізичної особи"
+                      shadow="norm">
+                  </BaseImage>
+                  <ContentContainer padding="none" flex="column" no-background="true" style="min-height: 20vh; justify-content: space-between;">
                     <ContentContainer
-                        padding="none"
                         flex="column"
-                        noBackground="true">
-                      <BaseButton
-                          name="Кнопка редагування персональних даних"
-                          title="Редагувати персональні дані"
-                          size="sm"
-                          @click="handleEditPersonalInfo"
-                      >
-                        <BaseImage :src="EditImg" size="icon" />
-                      </BaseButton>
-                      <BaseButton size="sm">
-                        <BaseImage size="icon" :src="ReminderOff"></BaseImage>
-                      </BaseButton>
+                        padding="left"
+                        style="margin-left: 1vw">
+
+                      <!-- ПІБ -->
+                        <span
+                          class="title_string"
+                          title="ПІБ фізичної особи">
+                          {{naturalPerson?.FullName
+                                ? naturalPerson?.FullName
+                                : 'Відсутні дані'}}
+                        </span>
+                      <BaseLine size="half"></BaseLine>
+
+                      <!-- ДАТА НАРОДЖЕННЯ -->
+                      <ContentContainer
+                          name="Контейнер з датою народження"
+                          flex="row"
+                          style="min-height: 2vw"
+                          padding="string">
+                        <span class="chapter_title"> Дата народження: </span>
+                        <span
+                            class="subtitle_string_name_h2"
+                            title="Дата народження фізичної особи"> {{
+                            naturalPerson?.Birthday
+                                ? formatDate(naturalPerson?.Birthday)
+                                : "Відсутні дані"}}
+                        </span>
+                      </ContentContainer>
+
+                      <!-- ПОДАТКОВИЙ НОМЕР -->
+                      <ContentContainer
+                          flex="row"
+                          style="min-height: 2vw"
+                          padding="string">
+                        <span class="chapter_title"> Реєстраційний номер: </span>
+                        <span
+                            class="subtitle_string_name_h2"
+                            title="Податковий номер фізичної особи"> {{
+                            naturalPerson?.TaxId
+                                ? naturalPerson?.TaxId
+                                : "Відсутні дані"}}
+                        </span>
+                      </ContentContainer>
+
+                      <!-- ПАСПОРТ -->
+                      <ContentContainer
+                          flex="row"
+                          style="min-height: 2vw"
+                          padding="string">
+                        <span class="chapter_title"> Паспортні дані: </span>
+                        <span
+                            class="subtitle_string_name_h2"
+                            title="Паспортні дані фізичної особи"> {{
+                            naturalPerson?.Passport
+                                ? naturalPerson?.Passport
+                                : "Відсутні дані"}}
+                        </span>
+                      </ContentContainer>
+
                     </ContentContainer>
-                  </ContentContainer>
-                <BaseLine></BaseLine>
-                <ContentContainer grid="1fr 3vw" padding="none">
-                  <ContentContainer padding="none">
-                    <ContentContainer class="chapter_title" padding="left">
-                      Біографія
-                    </ContentContainer>
-                    <ContentContainer class="prime_text_string" no-background="true" v-if="naturalPerson?.Biography">
-                      {{ naturalPerson?.Biography }}
-                    </ContentContainer>
-                    <ContentContainer v-else class="text_no_data" no-background="true">
-                      Відсутні дані
-                    </ContentContainer>
-                  </ContentContainer>
+              </ContentContainer>
                   <ContentContainer
                       padding="none"
+                      flex="column"
                       noBackground="true">
                     <BaseButton
-                        name="Кнопка редагування біографії"
-                        title="Редагувати біографію"
+                        :disabled="naturalPerson.is_blocked"
+                        name="Кнопка редагування персональних даних"
+                        title="Редагувати персональні дані"
                         size="sm"
-                        @click="handleEditBiography(naturalPerson.Id)"
+                        @click="handleEditPersonalInfo"
                     >
                       <BaseImage :src="EditImg" size="icon" />
                     </BaseButton>
+                    <BaseButton
+                        size="sm">
+                      <BaseImage size="icon" :src="ReminderOff"></BaseImage>
+                    </BaseButton>
                   </ContentContainer>
                 </ContentContainer>
+              <BaseLine></BaseLine>
+              <ContentContainer grid="1fr 3vw" padding="none">
+                <ContentContainer padding="none">
+                  <ContentContainer class="chapter_title" padding="left">
+                    Біографія
+                  </ContentContainer>
+                  <ContentContainer class="prime_text_string" no-background="true" v-if="naturalPerson?.Biography">
+                    {{ naturalPerson?.Biography }}
+                  </ContentContainer>
+                  <ContentContainer v-else class="text_no_data" no-background="true">
+                    Відсутні дані
+                  </ContentContainer>
+                </ContentContainer>
+                <ContentContainer
+                    padding="none"
+                    noBackground="true">
+                  <BaseButton
+                      :disabled="naturalPerson.is_blocked"
+                      name="Кнопка редагування біографії"
+                      title="Редагувати біографію"
+                      size="sm"
+                      @click="handleEditBiography(naturalPerson.id)"
+                  >
+                    <BaseImage :src="EditImg" size="icon" />
+                  </BaseButton>
+                </ContentContainer>
               </ContentContainer>
-        </ContentContainer>
+            </ContentContainer>
+      </ContentContainer>
+      </ContentContainer>
+
+      <!-- КОНТЕЙНЕР ПРИВАТНОГО ЕЛЕМЕНТА -->
+      <ContentContainer v-else class="chapter_title" paddingStyle="5vw 15vw 0 15vw" style="text-align: center;">
+          <span class="subtitle_string_type_h2">Профіль захищено налаштуваннями приватності</span><br>
+          <BaseLine size="full"></BaseLine><br>
+          Для доступу зверніться до власника: <span class="subtitle_string_type_h2">{{ getOwner(naturalPerson ? naturalPerson.created_by : "")}}</span>, <br>
+          або працівника з рівнем доступу <span class="subtitle_string_type_h2">Адміністратор</span>
+      </ContentContainer>
 
     </template>
 
