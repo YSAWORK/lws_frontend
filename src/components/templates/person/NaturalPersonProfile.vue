@@ -583,9 +583,9 @@ onMounted(async () => {
     <template #main_column_left >
         <ContentContainer v-if="naturalPerson && (!naturalPerson.is_personal || currentEmployee?.IsAdmin || employeeId === naturalPerson.created_by)" padding="none">
           <ContentContainer padding="none" grid="1fr 6vw">
-            <ContentContainer flex="row" padding="none" no-background="true" style="background: rgba(var(--bg-rgb), 0.8); margin-top: auto; flex-wrap: wrap;">
+            <ContentContainer grid="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr " padding="none" no-background="true" style="background: rgba(var(--bg-rgb), 0.8); margin-top: auto; flex-wrap: wrap;">
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'biography' ? 'primary' : 'secondary'"
                   @click="setActiveSection('biography')"
@@ -594,7 +594,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'contacts' ? 'primary' : 'secondary'"
                   @click="setActiveSection('contacts')"
@@ -603,7 +603,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'files' ? 'primary' : 'secondary'"
                   @click="setActiveSection('files')"
@@ -612,7 +612,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'tasks' ? 'primary' : 'secondary'"
                   @click="setActiveSection('tasks')"
@@ -621,7 +621,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'connections' ? 'primary' : 'secondary'"
                   @click="setActiveSection('connections')"
@@ -630,7 +630,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'notifications' ? 'primary' : 'secondary'"
                   @click="setActiveSection('notifications')"
@@ -639,7 +639,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'notes' ? 'primary' : 'secondary'"
                   @click="setActiveSection('notes')"
@@ -648,7 +648,7 @@ onMounted(async () => {
               </BaseButton>
 
               <BaseButton
-                  size="md"
+                  size="full"
                   variant="tab"
                   :styleType="activeSection === 'global_comments' ? 'primary' : 'secondary'"
                   @click="setActiveSection('global_comments')"
