@@ -35,7 +35,7 @@
   /* === SIZE === */
   .size-sm {
     width: 5vw;
-    height: 7vw;
+    height: 5vw;
     object-fit: cover;
   }
   .size-md {
@@ -49,8 +49,8 @@
     object-fit: cover;
   }
   .size-icon {
-    width: 40px;
-    height: 40px;
+    width: 3vw;
+    height: 3vw;
     object-fit: contain;
     border: none;
     border-radius: 3px;

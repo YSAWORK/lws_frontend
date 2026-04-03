@@ -97,10 +97,6 @@
     background-color: var(--button-primary);
   }
 
-
-
-
-
   /* === white === */
   .variant-warning {
     background-color: var(--button-primary);
@@ -112,7 +108,7 @@
   }
 
   /* === SIZE === */
-  .size-sm { width: 50px; height: 50px; font-size: var(--btn-font-size-sm); padding: 0}
+  .size-sm { width: 2vw; height: 2vw; font-size: var(--btn-font-size-sm); padding: 0}
   .size-md { width: 150px; height: 50px; font-size: var(--btn-font-size-md); }
   .size-lg { width: 300px; height: 50px; font-size: var(--btn-font-size-lg); }
   .size-full { width: 100%; height: 50px; font-size: var(--btn-font-size-lg); }

@@ -36,7 +36,7 @@
     import EmailImg from '@/assets/img/email.svg'
     import PhoneImg from '@/assets/img/phone.png'
     import AddressImg from '@/assets/img/address.png'
-    import EditImg from '@/assets/img/edit.png'
+    import EditImg from '@/assets/img/edit.svg'
     import FeedbackImg from '@/assets/img/feedback.svg'
     import DeleteImg from '@/assets/img/delete.svg'
     import NewImg from '@/assets/img/new.svg'

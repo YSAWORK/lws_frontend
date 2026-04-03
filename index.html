@@ -1,15 +1,24 @@
-<!-- .index.html -->
+<!-- index.html -->
+<!-- вхідна точка фронтенд-додатку
+     єдиний HTML-файл, який віддається браузеру
+     все інше (Vue, компоненти, логіка) підвантажується через JS
+     файл має бути максимально ПРОСТИМ: вся логіка → у Vue, HTML — тільки контейнер + мета -->
 
 <!doctype html>
-<html lang="uk"> <!--  -->
+<html lang="uk">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- іконка вкладки браузера -->
+    <link id="browser_icon" rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- налаштування адаптивності розміру сторінки під гаджет (must-have для мобілок) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- назва вкладки браузера -->
     <title>LWS</title>
   </head>
   <body>
+    <!-- root-елемент, куди Vue вставить весь UI -->
     <div id="app"></div>
+    <!-- Підключення фронтенду -->
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

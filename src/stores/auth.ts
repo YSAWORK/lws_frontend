@@ -8,6 +8,7 @@ type AuthState = {
     IsAdmin: boolean | null
 }
 
+// !! додати валідацію даних зі storage через zod.
 export const useAuthStore = defineStore("auth", {
     state: (): AuthState => ({
         access: null,

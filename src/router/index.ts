@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
     ...personRoutes,
 ]
 
-const router = createRouter({
+export const router = createRouter({
     history: createWebHistory(),
     routes
 })
